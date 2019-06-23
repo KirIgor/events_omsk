@@ -1,6 +1,6 @@
 # omsk_events
 
-Events of Omsk city (victory day, day of city, etc)
+App for omsk events management.
 
 ## Getting Started
 
