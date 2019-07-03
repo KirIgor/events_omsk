@@ -13,13 +13,13 @@ import 'package:omsk_events/bloc/timetable-bloc.dart';
 import 'package:omsk_events/bloc/user-bloc.dart';
 import 'package:omsk_events/di.dart';
 
-import 'event-list-page.dart';
-import 'map-page.dart';
-import 'timetable-list-page.dart';
-import 'settings-page.dart';
-import 'event-page.dart';
-import 'vk-auth-page.dart';
-import 'about-page.dart';
+import 'ui/event-list-page.dart';
+import 'ui/map-page.dart';
+import 'ui/timetable-list-page.dart';
+import 'ui/settings-page.dart';
+import 'ui/event-page.dart';
+import 'ui/vk-auth-page.dart';
+import 'ui/about-page.dart';
 
 void main() async {
   try {
