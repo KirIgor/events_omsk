@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:omsk_events/bloc/event-map-bloc.dart';
-import 'package:omsk_events/di.dart';
+import 'package:omsk_events/bloc/bloc-widget.dart';
 import 'package:omsk_events/model/event-short.dart';
 
 import 'dart:async';
@@ -13,6 +13,12 @@ const dZoomToChangeMarkers = 1.0;
 const gridCountXInView = 5;
 const gridCountYInView = 10;
 const omskCameraPosition = LatLng(54.972764, 73.3336552);
+// there was bug with infinite loop in init state,
+// because onMapCreated doesn't guarantee that getVisibleRegion will
+// not return ((0,0), (0,0)), so initialVisibleRegion is hardcoded now
+final initialVisibleRegion = LatLngBounds(
+    southwest: LatLng(54.8381112099642, 73.19882277399302),
+    northeast: LatLng(55.10696676234333, 73.46848703920841));
 
 class MapPage extends StatefulWidget {
   MapPage({Key key}) : super(key: key);
@@ -36,13 +42,13 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   double _prevZoom = initZoom;
 
   LatLngBounds _cityBounds;
-  final _eventBloc = EventMapBloc(repository: DI.eventRepository);
+  EventMapBloc _eventBloc;
 
   @override
   void initState() {
     super.initState();
 
-    _eventBloc.fetchAllEvents();
+    _eventBloc = BlocWidget.of(context);
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
 
@@ -67,10 +73,11 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     _mapController.future.then((controller) async {
       final markers = _getAllMarkersFromEvents(_events);
       _cityBounds = _calcCityBounds(markers);
-      final visibleRegion = await controller.getVisibleRegion();
+      final filteredMarkers =
+          await _filterMarkers(markers, initialVisibleRegion, initZoom);
 
       setState(() {
-        _markers = _filterMarkers(markers, visibleRegion, initZoom);
+        _markers = filteredMarkers;
       });
     });
   }
@@ -104,6 +111,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
       GoogleMap(
         markers: _markers,
         onMapCreated: (controller) {
+          print('sending controller');
           _mapController.complete(controller);
         },
         rotateGesturesEnabled: false,
@@ -116,10 +124,12 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
           final GoogleMapController controller = await _mapController.future;
           final visibleRegion = await controller.getVisibleRegion();
           final markers = _getAllMarkersFromEvents(_events);
+          final filteredMarkers =
+              await _filterMarkers(markers, visibleRegion, pos.zoom);
 
           setState(() {
             _prevZoom = pos.zoom;
-            _markers = _filterMarkers(markers, visibleRegion, pos.zoom);
+            _markers = filteredMarkers;
           });
         },
       ),
@@ -203,8 +213,8 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     return dx * dx + dy * dy;
   }
 
-  Set<Marker> _filterMarkers(
-      Set<Marker> markers, LatLngBounds bounds, double zoom) {
+  Future<Set<Marker>> _filterMarkers(
+      Set<Marker> markers, LatLngBounds bounds, double zoom) async {
     if (zoom > 13) return markers;
 
     Set<Marker> res = Set();

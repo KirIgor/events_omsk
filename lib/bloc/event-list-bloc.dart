@@ -1,42 +1,35 @@
 import 'package:meta/meta.dart';
 import 'package:omsk_events/model/event-short.dart';
+import 'package:omsk_events/model/event.dart';
 import 'package:omsk_events/resources/repositories/abstract/event-repository.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:synchronized/synchronized.dart';
 
 import 'bloc-base.dart';
 
 class EventListBloc extends BlocBase {
   final EventRepository _repository;
+
   EventListBloc({@required EventRepository repository})
       : _repository = repository;
 
   final _eventsFetcher = PublishSubject<List<EventShort>>();
   final _loadingSubject = PublishSubject<bool>();
+  OrderBy orderBy = OrderBy.LIKES_COUNT;
 
   Observable<List<EventShort>> get allEvents => _eventsFetcher.stream;
+
   Observable<bool> get isNewEventsLoading => _loadingSubject.stream;
 
   final List<EventShort> loadedEvents = List();
-  int _currentPage = 0;
-  final _lock = Lock();
 
-  Future<void> fetchNewEvents() async {
-    return await _lock.synchronized(() async {
-      _loadingSubject.add(true);
-      List<EventShort> events =
-          await _repository.fetchEvents(page: _currentPage, pageSize: 6);
-      loadedEvents.addAll(events);
-      _currentPage++;
-      _loadingSubject.add(false);
-      _eventsFetcher.sink.add(loadedEvents);
-    }, timeout: Duration(microseconds: 0));
+  Future<List<EventShort>> fetchNewEvents(int page) async {
+    return await _repository.fetchEvents(
+        page: page, pageSize: 5, orderBy: orderBy);
   }
 
   Future<void> refresh() async {
-    _currentPage = 0;
     loadedEvents.clear();
-    await fetchNewEvents();
+    await fetchNewEvents(0);
   }
 
   @override
@@ -45,8 +38,8 @@ class EventListBloc extends BlocBase {
     _loadingSubject.close();
   }
 
-  @override
-  void init() async {
+  void setOrderBy(OrderBy value) async {
+    orderBy = value;
     refresh();
   }
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:omsk_events/model/event-short.dart';
-import 'package:omsk_events/model/event.dart';
 import 'package:omsk_events/resources/repositories/abstract/event-repository.dart';
 import 'package:omsk_events/resources/repositories/abstract/timetable-repository.dart';
 import 'package:rxdart/rxdart.dart';

@@ -20,9 +20,9 @@ class EventFull {
     _description =
         parsedJson["description"] ?? parsedJson["croppedDescription"];
     _hasAlbums = parsedJson["hasAlbums"];
-    _startDateTime = DateTime.parse(parsedJson["startDateTime"]);
+    _startDateTime = DateTime.parse(parsedJson["startDateTime"]).toLocal();
     _endDateTime = parsedJson["endDateTime"] != null
-        ? DateTime.parse(parsedJson["endDateTime"])
+        ? DateTime.parse(parsedJson["endDateTime"]).toLocal()
         : null;
     _latitude = parsedJson["latitude"];
     _longitude = parsedJson["longitude"];

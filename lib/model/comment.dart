@@ -13,7 +13,7 @@ class Comment {
     _userAvatar = parsedJson["userAvatar"];
     _userName = parsedJson["userName"];
     _vkId = parsedJson["vkId"];
-    _modifiedAt = DateTime.parse(parsedJson["modifiedAt"]);
+    _modifiedAt = DateTime.parse(parsedJson["modifiedAt"]).toLocal();
   }
 
   Comment({int id, String text, String userAvatar, String userName})

@@ -11,6 +11,9 @@ import 'package:flutter_pagewise/flutter_pagewise.dart';
 
 import 'package:omsk_events/bloc/bloc-widget.dart';
 import 'package:omsk_events/bloc/event-details-bloc.dart';
+import 'package:omsk_events/bloc/user-bloc.dart';
+import 'package:omsk_events/resources/providers/token-provider.dart';
+import 'package:omsk_events/resources/providers/user-info-provider.dart';
 import 'package:omsk_events/di.dart';
 import 'package:omsk_events/model/event.dart';
 import 'package:omsk_events/model/comment.dart';
@@ -49,9 +52,10 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
   double _offset = 0.0;
 
   final int eventId;
-  EventDetailsBloc eventDetailsBloc;
+  EventDetailsBloc _eventDetailsBloc;
+  UserBloc _userBloc;
 
-  PagewiseLoadController _pagewiseLoadController;
+  PagewiseLoadController<Comment> _pagewiseLoadController;
 
   AnimationController _animationController;
   Animation _commentFadeAnimation;
@@ -62,7 +66,8 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    eventDetailsBloc = BlocWidget.of<EventDetailsBloc>(context);
+    _eventDetailsBloc = BlocWidget.of(context);
+    _userBloc = BlocWidget.of(context);
 
     _pagewiseLoadController = PagewiseLoadController(
         pageFuture: (pageIndex) {
@@ -149,51 +154,63 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
     return Theme(
       data: ThemeData(),
       child: Scaffold(
-        body: StreamBuilder(
-            stream: eventDetailsBloc.event,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                EventFull event = snapshot.data;
-                return Stack(
-                  children: <Widget>[
-                    CustomScrollView(
-                      controller: _controller,
-                      slivers: <Widget>[
-                        SliverAppBar(
-                            expandedHeight: widget._topBarHeight,
-                            pinned: true,
-                            floating: false,
-                            snap: false,
-                            actions: _buildActions(event),
-                            flexibleSpace: _buildFlexibleSpaceBar(event)),
-                        SliverList(
-                            delegate: SliverChildListDelegate(<Widget>[
-                          EventPageInfo(event: event),
-                          EventPageMap(event: event),
-                          EventPageContact(event: event),
-                          EventPageToAlbumAndVK(event: event),
-                          EventPageCommentForm(
-                            pagewiseLoadController: _pagewiseLoadController,
-                            commentFadeAnimationController:
-                                _animationController,
-                            event: event,
-                          )
-                        ])),
-                        EventPageComments(
-                          event: event,
-                          pagewiseLoadController: _pagewiseLoadController,
-                          commentFadeAnimation: _commentFadeAnimation,
-                        )
-                      ],
-                    ),
-                    _buildFloatingActionButton(event)
-                  ],
-                );
-              } else {
-                return Center(child: CircularProgressIndicator());
-              }
-            }),
-      ),
+          body: StreamBuilder(
+              stream: _userBloc.userInfo,
+              builder: (context, userSnapshot) {
+                return StreamBuilder(
+                    stream: _eventDetailsBloc.event,
+                    builder: (context, eventSnapshot) {
+                      if (userSnapshot.connectionState ==
+                              ConnectionState.active &&
+                          eventSnapshot.connectionState ==
+                              ConnectionState.active) {
+                        UserInfo userInfo = userSnapshot.data;
+                        EventFull event = eventSnapshot.data;
+
+                        return Stack(
+                          children: <Widget>[
+                            CustomScrollView(
+                              controller: _controller,
+                              slivers: <Widget>[
+                                SliverAppBar(
+                                    expandedHeight: widget._topBarHeight,
+                                    pinned: true,
+                                    floating: false,
+                                    snap: false,
+                                    actions: _buildActions(event),
+                                    flexibleSpace:
+                                        _buildFlexibleSpaceBar(event)),
+                                SliverList(
+                                    delegate: SliverChildListDelegate(<Widget>[
+                                  EventPageInfo(event: event),
+                                  EventPageMap(event: event),
+                                  EventPageContact(event: event),
+                                  EventPageToAlbumAndVK(event: event),
+                                  EventPageCommentForm(
+                                    pagewiseLoadController:
+                                        _pagewiseLoadController,
+                                    commentFadeAnimationController:
+                                        _animationController,
+                                    event: event,
+                                    userInfo: userInfo,
+                                  )
+                                ])),
+                                EventPageComments(
+                                    event: event,
+                                    userInfo: userInfo,
+                                    pagewiseLoadController:
+                                        _pagewiseLoadController,
+                                    commentFadeAnimation: _commentFadeAnimation)
+                              ],
+                            ),
+                            _buildFloatingActionButton(event)
+                          ],
+                        );
+                      } else {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                    });
+              })),
     );
   }
 
@@ -222,14 +239,14 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
         .share();
   }
 
-  void onLikeOrDislike(EventFull event) {
+  void onLikeOrDislike(EventFull event) async {
     try {
       if (event.liked)
-        eventDetailsBloc.dislikeEvent(event);
+        await _eventDetailsBloc.dislikeEvent(event);
       else
-        eventDetailsBloc.likeEvent(event);
-    } catch (NotAuthorizedException) {
-      Navigator.of(context).pushNamed("/auth");
+        await _eventDetailsBloc.likeEvent(event);
+    } on NotAuthorizedException {
+      Navigator.pushNamed(context, "/auth");
     }
   }
 }
@@ -383,6 +400,7 @@ class EventPageToAlbumAndVK extends StatelessWidget {
 
 class EventPageCommentForm extends StatefulWidget {
   final EventFull event;
+  final UserInfo userInfo;
   final PagewiseLoadController pagewiseLoadController;
   final AnimationController commentFadeAnimationController;
 
@@ -390,7 +408,8 @@ class EventPageCommentForm extends StatefulWidget {
       {Key key,
       this.pagewiseLoadController,
       this.commentFadeAnimationController,
-      this.event})
+      this.event,
+      this.userInfo})
       : super(key: key);
 
   @override
@@ -398,12 +417,29 @@ class EventPageCommentForm extends StatefulWidget {
 }
 
 class EventPageCommentFormState extends State<EventPageCommentForm> {
+  FocusNode _focusNode = FocusNode();
   TextEditingController _textEditingController = TextEditingController();
   GlobalKey<FormState> _formState = GlobalKey();
+
+  UserBloc _userBloc;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _userBloc = BlocWidget.of(context);
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus && widget.userInfo == null) {
+        _focusNode.unfocus();
+        Navigator.pushNamed(context, "/auth");
+      }
+    });
+  }
 
   @override
   void dispose() {
     _textEditingController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -416,6 +452,7 @@ class EventPageCommentFormState extends State<EventPageCommentForm> {
             title: Form(
                 key: _formState,
                 child: TextFormField(
+                  focusNode: _focusNode,
                   controller: _textEditingController,
                   validator: (text) {
                     if (text.length > 250)
@@ -436,7 +473,7 @@ class EventPageCommentFormState extends State<EventPageCommentForm> {
         ]));
   }
 
-  VoidCallback _onCommentSent() {
+  void _onCommentSent() {
     if (!_formState.currentState.validate()) return null;
 
     final text = _textEditingController.text;
@@ -460,14 +497,16 @@ class EventPageCommentFormState extends State<EventPageCommentForm> {
 
 class EventPageComments extends StatelessWidget {
   final EventFull event;
-  final PagewiseLoadController pagewiseLoadController;
+  final UserInfo userInfo;
+  final PagewiseLoadController<Comment> pagewiseLoadController;
   final Animation<double> commentFadeAnimation;
 
   const EventPageComments(
       {Key key,
       this.event,
       this.pagewiseLoadController,
-      this.commentFadeAnimation})
+      this.commentFadeAnimation,
+      this.userInfo})
       : super(key: key);
 
   Widget _buildComment(Comment c) {
@@ -505,8 +544,7 @@ class EventPageComments extends StatelessWidget {
         ));
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildDismissible(int index, Comment c) {
     final dismissBackground = Container(
       color: Colors.red,
       child: ListTile(
@@ -514,26 +552,32 @@ class EventPageComments extends StatelessWidget {
       ),
     );
 
-    return PagewiseSliverList(
+    if (userInfo != null && userInfo.vkId == c.vkId) {
+      return Dismissible(
+          key: Key(c.id.toString()),
+          direction: DismissDirection.horizontal,
+          background: dismissBackground,
+          secondaryBackground: dismissBackground,
+          onDismissed: (direction) {
+            pagewiseLoadController.loadedItems.removeAt(index);
+            DI.commentRepository.deleteComment(c.id);
+          },
+          child: _buildComment(c));
+    } else
+      return _buildComment(c);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PagewiseSliverList<Comment>(
       pageLoadController: pagewiseLoadController,
       itemBuilder: (context, c, index) {
         if (index == 0 && c.justCreated) {
           return FadeTransition(
-              opacity: commentFadeAnimation, child: _buildComment(c));
-        }
-        if (index.isOdd) {
-          // TODO: implement real delete comment logic
-          return Dismissible(
-              key: Key(c.id.toString()),
-              background: dismissBackground,
-              secondaryBackground: dismissBackground,
-              onDismissed: (direction) {
-                pagewiseLoadController.loadedItems.removeAt(index);
-                DI.commentRepository.deleteComment(c.id);
-              },
-              child: _buildComment(c));
+              opacity: commentFadeAnimation,
+              child: _buildDismissible(index, c));
         } else
-          return _buildComment(c);
+          return _buildDismissible(index, c);
       },
     );
   }

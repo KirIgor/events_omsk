@@ -1,6 +1,5 @@
 import 'package:omsk_events/di.dart';
 import 'package:omsk_events/model/album-short.dart';
-import 'package:omsk_events/model/album.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:omsk_events/model/event.dart';
 import 'package:omsk_events/model/success.dart';
@@ -13,9 +12,9 @@ class ApiEventRepository implements EventRepository {
   @override
   Future<List<EventShort>> fetchEvents(
       {int page = 0,
-      int pageSize = 10,
-      OrderBy orderBy = OrderBy.LIKES_COUNT,
-      OrderType orderType = OrderType.DESC}) {
+        int pageSize = 10,
+        OrderBy orderBy = OrderBy.LIKES_COUNT,
+        OrderType orderType = OrderType.DESC}) {
     return eventsProvider.fetchEvents(
         page: page, pageSize: pageSize, orderBy: orderBy, orderType: orderType
     );

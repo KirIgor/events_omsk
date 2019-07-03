@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Events Omsk Login</string>
+    <integer name="com_vk_sdk_AppId">6989563</integer>
+</resources>

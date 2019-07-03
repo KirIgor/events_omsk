@@ -14,7 +14,7 @@ class EventMapBloc extends BlocBase {
   Observable<List<EventShort>> get allEvents => _eventsFetcher.stream;
   
   Future<void> fetchAllEvents() async {
-    List<EventShort> events = await _repository.fetchEvents(pageSize: 1000);
+    List<EventShort> events = await _repository.fetchEvents(pageSize: -1);
     _eventsFetcher.sink.add(events);
   }
 

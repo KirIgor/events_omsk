@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:omsk_events/bloc/bloc-widget.dart';
+import 'package:omsk_events/bloc/event-list-bloc.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:share/share.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -15,39 +17,32 @@ class EventItem extends StatelessWidget {
     Navigator.of(context).pushNamed("/event_details", arguments: _event.id);
   }
 
-  void _onFavoriteClick(BuildContext context) {}
-
   void _onShareClick(BuildContext context) {
     Share.plainText(
-            title: _event.name,
-            text: _event.mainImage ?? "" +
-                "\n" +
-                _event.name +
-                "\n" +
-                _event.description ?? "")
+        title: _event.name,
+        text: _event.mainImage ??
+            "" + "\n" + _event.name + "\n" + _event.description ??
+            "")
         .share();
   }
 
-  Widget getMainPhoto(){
+  Widget getMainPhoto() {
     if (_event.mainImage != null) {
       return FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
           image: _event.mainImage,
           height: 180,
           width: double.infinity,
-          fit: BoxFit.cover
-      );
+          fit: BoxFit.cover);
     }
     return Container();
   }
 
-  Widget getDescription(){
-    if (_event.description != null){
+  Widget getDescription() {
+    if (_event.description != null) {
       return Container(
         margin: EdgeInsets.only(
-            top: 8,
-            left: _HORIZONTAL_PADDING,
-            right: _HORIZONTAL_PADDING),
+            top: 8, left: _HORIZONTAL_PADDING, right: _HORIZONTAL_PADDING),
         child: Text(_event.description,
             maxLines: 2,
             style: TextStyle(color: Colors.grey),
@@ -94,10 +89,10 @@ class EventItem extends StatelessWidget {
                                   Container(
                                       margin: EdgeInsets.only(left: 4),
                                       child: Text(
-                                          DateFormat("dd.MM.yyyy, hh:mm")
+                                          DateFormat("dd.MM.yyyy, H:mm")
                                               .format(_event.startDateTime),
                                           style:
-                                              TextStyle(color: Colors.black45)))
+                                          TextStyle(color: Colors.black45)))
                                 ]))
                           ],
                         ),
@@ -105,23 +100,21 @@ class EventItem extends StatelessWidget {
                       getDescription(),
                       Container(
                           margin:
-                              EdgeInsets.only(top: 8, left: 4.0, right: 4.0),
+                          EdgeInsets.only(top: 8, left: 12.0, right: 4.0),
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    IconButton(
-                                      icon: Icon(Icons.favorite,
-                                          color: Colors.black54),
-                                      onPressed: () =>
-                                          _onFavoriteClick(context),
-                                    ),
-                                    Text(_event.likesCount.toString(),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            color: Colors.black54))
+                                    Icon(Icons.favorite, color: Colors.black54),
+                                    Container(
+                                        margin: EdgeInsets.only(left: 4),
+                                        child: Text(
+                                            _event.likesCount.toString(),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.black54)))
                                   ],
                                 ),
                                 IconButton(

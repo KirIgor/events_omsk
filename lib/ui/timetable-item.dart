@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:omsk_events/model/event-short.dart';
-import 'package:omsk_events/model/event.dart';
 
 class TimetableItem extends StatelessWidget {
   final EventShort _event;
@@ -14,32 +13,44 @@ class TimetableItem extends StatelessWidget {
     Navigator.of(context).pushNamed("/event_details", arguments: eventId);
   }
 
+  bool isFinished() {
+    if (_event.endDateTime != null) {
+      return _event.endDateTime.millisecondsSinceEpoch <
+          DateTime.now().millisecondsSinceEpoch;
+    }
+    return _event.startDateTime.millisecondsSinceEpoch <
+        DateTime.now().millisecondsSinceEpoch;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 80,
-      alignment: Alignment.center,
-      child: ListTile(
-        onTap: () => _onShowDetails(context, _event.id),
-        leading: CircleAvatar(
-            backgroundImage: _event.mainImage == null ? AssetImage("assets/grey_box.jpg") : NetworkImage(_event.mainImage)
-        ),
-        title: Text(_event.name),
-        subtitle: Container(
-          child: Row(children: <Widget>[
-            Icon(Icons.date_range, color: Colors.black45, size: 16.0),
-            Container(
-                margin: EdgeInsets.only(left: 4),
-                child: Text(
-                  "${DateFormat("dd.MM, hh:mm").format(_event.startDateTime)}"
-                  "${_event.endDateTime == null ? "" : DateFormat(" - dd.MM, hh:mm").format(_event.endDateTime)}",
-                  style: TextStyle(color: Colors.black45),
-                )),
-          ]),
-          margin: EdgeInsets.only(top: 4),
-        ),
-        trailing: Icon(Icons.navigate_next),
-      ),
-    );
+    return Opacity(
+        opacity: isFinished() ? 0.4 : 1,
+        child: Container(
+          height: 80,
+          alignment: Alignment.center,
+          child: ListTile(
+            onTap: () => _onShowDetails(context, _event.id),
+            leading: CircleAvatar(
+                backgroundImage: _event.mainImage == null
+                    ? AssetImage("assets/grey_box.jpg")
+                    : NetworkImage(_event.mainImage)),
+            title: Text(_event.name),
+            subtitle: Container(
+              child: Row(children: <Widget>[
+                Icon(Icons.date_range, color: Colors.black45, size: 16.0),
+                Container(
+                    margin: EdgeInsets.only(left: 4),
+                    child: Text(
+                      "${DateFormat("dd.MM, hh:mm").format(_event.startDateTime)}"
+                      "${_event.endDateTime == null ? "" : DateFormat(" - dd.MM, hh:mm").format(_event.endDateTime)}",
+                      style: TextStyle(color: Colors.black45),
+                    )),
+              ]),
+              margin: EdgeInsets.only(top: 4),
+            ),
+            trailing: Icon(Icons.navigate_next),
+          ),
+        ));
   }
 }

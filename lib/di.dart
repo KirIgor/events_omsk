@@ -1,5 +1,7 @@
 import 'package:omsk_events/resources/providers/shared-pref-token-provider.dart';
 import 'package:omsk_events/resources/providers/token-provider.dart';
+import 'package:omsk_events/resources/providers/vk-sdk-provider.dart';
+import 'package:omsk_events/resources/providers/simple-vk-sdk-provider.dart';
 import 'package:omsk_events/resources/repositories/abstract/album-repository.dart';
 import 'package:omsk_events/resources/repositories/abstract/event-repository.dart';
 import 'package:omsk_events/resources/repositories/abstract/comment-repository.dart';
@@ -17,8 +19,9 @@ class DI {
   static TimetableRepository timetableRepository = ApiTimetableRepository();
   static EventRepository eventRepository =
       ApiCacheMediator(api: ApiEventRepository(), cache: _cacheRepository);
-
   static AlbumRepository albumRepository = ApiAlbumRepository();
   static CommentRepository commentRepository = ApiCommentRepository();
+
   static TokenProvider tokenProvider = SharedPreferenceTokenProvider();
+  static VkSdkProvider vkSdkProvider = SimpleVkSdkProvider();
 }

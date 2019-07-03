@@ -15,16 +15,19 @@ class EventAPIProvider extends APIProvider {
   final Client _client = Client();
   final TokenProvider _tokenProvider;
 
-  EventAPIProvider({@required TokenProvider tokenProvider}):
-      _tokenProvider = tokenProvider;
+  EventAPIProvider({@required TokenProvider tokenProvider})
+      : _tokenProvider = tokenProvider;
 
   Future<List<EventShort>> fetchEvents(
       {int page = 0,
       int pageSize = 10,
       OrderBy orderBy = OrderBy.LIKES_COUNT,
       OrderType orderType = OrderType.DESC}) async {
-    final response =
-        await _client.get("$baseURL/events?pageSize=$pageSize&page=$page");
+    final orderByText = orderBy.toString().split(".")[1];
+    final orderTypeText = orderType.toString().split(".")[1];
+
+    final response = await _client.get(
+        "$baseURL/events?pageSize=$pageSize&page=$page&orderBy=$orderByText&orderType=$orderTypeText");
 
     if (response.statusCode == 200) {
       return (json.decode(response.body) as List)

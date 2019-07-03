@@ -1,16 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_vk_sdk/flutter_vk_sdk.dart';
 
-import 'package:omsk_events/ui/event-page.dart';
-import 'package:omsk_events/ui/timetable-list-page.dart';
+import 'dart:io';
+
 import 'package:omsk_events/bloc/bloc-widget.dart';
 import 'package:omsk_events/bloc/event-details-bloc.dart';
 import 'package:omsk_events/bloc/event-list-bloc.dart';
+import 'package:omsk_events/bloc/event-map-bloc.dart';
+import 'package:omsk_events/bloc/timetable-bloc.dart';
+import 'package:omsk_events/bloc/user-bloc.dart';
 import 'package:omsk_events/di.dart';
+
 import 'event-list-page.dart';
 import 'map-page.dart';
+import 'timetable-list-page.dart';
+import 'settings-page.dart';
+import 'event-page.dart';
+import 'vk-auth-page.dart';
+import 'about-page.dart';
 
-main() => initializeDateFormatting("ru_RU").then((_) => runApp(App()));
+void main() async {
+  try {
+    await initializeDateFormatting("ru_RU");
+    if (Platform.isIOS) {
+      const String APP_ID = '6989563';
+      const String API_VERSION = '5.90';
+
+      final vkSdk =
+          await VKSdk.initialize(appId: APP_ID, apiVersion: API_VERSION);
+      DI.vkSdkProvider.setInstance(vkSdk);
+    }
+
+    runApp(App());
+  } on VKSdkException catch (error) {
+    print(error.message);
+  }
+}
 
 class App extends StatefulWidget {
   @override
@@ -20,7 +47,41 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   int _currentSelected = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    firebaseCloudMessaging_Listeners();
+  }
+
+  void firebaseCloudMessaging_Listeners() {
+    if (Platform.isIOS) iOS_Permission();
+
+    _firebaseMessaging.subscribeToTopic("all");
+
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print('on message $message');
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print('on resume $message');
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print('on launch $message');
+      },
+    );
+  }
+
+  void iOS_Permission() {
+    _firebaseMessaging.requestNotificationPermissions(
+        IosNotificationSettings(sound: true, badge: true, alert: true));
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
+  }
 
   void _onSelectItem(int selected) {
     setState(() {
@@ -35,11 +96,20 @@ class _AppState extends State<App> {
             bloc: EventListBloc(repository: DI.eventRepository),
             child: EventListPage());
       case 1:
-        return MapPage();
+        return BlocWidget(
+            bloc: EventMapBloc(repository: DI.eventRepository),
+            child: MapPage());
       case 2:
-        return TimetableListPage();
+        return BlocWidget(
+          bloc: UserBloc(),
+          child: BlocWidget(
+              bloc: TimetableBloc(
+                  eventRepository: DI.eventRepository,
+                  timetableRepository: DI.timetableRepository),
+              child: TimetableListPage()),
+        );
       case 3:
-        return EventListPage();
+        return BlocWidget(bloc: UserBloc(), child: SettingsPage());
     }
     throw Exception("Invalid selected index");
   }
@@ -89,17 +159,25 @@ class _AppState extends State<App> {
         {
           int id = settings.arguments as int;
           return MaterialPageRoute(
-              builder: (context) => BlocWidget<EventDetailsBloc>(
-                  bloc: EventDetailsBloc(
-                      eventRepository: DI.eventRepository,
-                      commentRepository: DI.commentRepository,
-                      eventId: id),
-                  child: EventPage(eventId: id)));
+              builder: (context) => BlocWidget(
+                  bloc: UserBloc(),
+                  child: BlocWidget(
+                      bloc: EventDetailsBloc(
+                          eventRepository: DI.eventRepository,
+                          commentRepository: DI.commentRepository,
+                          eventId: id),
+                      child: EventPage(eventId: id))));
         }
       case "/map":
         return MaterialPageRoute(builder: (context) => MapPage());
       case "/settings":
-        break;
+        return MaterialPageRoute(builder: (context) => SettingsPage());
+      case "/about":
+        return MaterialPageRoute(builder: (context) => AboutPage());
+      case "/auth":
+        return MaterialPageRoute(
+            builder: (context) =>
+                BlocWidget(bloc: UserBloc(), child: VkAuthPage()));
     }
     throw Exception("Invalid page");
   }
