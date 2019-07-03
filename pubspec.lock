@@ -122,7 +122,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "2d1ec5f1d885cdec5eec4518b9f21cbed050b072"
-      url: "git@github.com:Stmol/flutter_vk_sdk.git"
+      url: "https://github.com/Stmol/flutter_vk_sdk.git"
     source: git
     version: "0.1.0"
   google_maps_flutter:
