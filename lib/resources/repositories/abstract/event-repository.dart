@@ -7,7 +7,7 @@ abstract class EventRepository {
   Future<List<EventShort>> fetchEvents(
       {int page = 0,
       int pageSize = 10,
-      OrderBy orderBy = OrderBy.LIKES_COUNT,
+      OrderBy orderBy = OrderBy.likesCount,
       OrderType orderType = OrderType.DESC});
 
   Future<EventFull> fetchEvent(int id);

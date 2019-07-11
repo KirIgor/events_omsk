@@ -8,6 +8,7 @@ class EventShort {
   double _longitude;
   int _likesCount;
   String _mainImage;
+  bool _isBig;
 
   EventShort({int id, DateTime startDateTime})
       : _id = id,
@@ -26,6 +27,7 @@ class EventShort {
     _longitude = parsedJson["longitude"];
     _likesCount = parsedJson["likesCount"];
     _mainImage = parsedJson["mainImage"];
+    _isBig = parsedJson["big"];
   }
 
   int get id => _id;
@@ -37,4 +39,5 @@ class EventShort {
   double get longitude => _longitude;
   int get likesCount => _likesCount;
   String get mainImage => _mainImage;
+  bool get isBig => _isBig;
 }

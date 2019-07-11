@@ -132,7 +132,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
             dotIncreaseSize: 1.3,
             autoplayDuration: const Duration(seconds: 5),
             boxFit: BoxFit.fitWidth,
-            images: event.photos.map((url) => NetworkImage(url)).toList()));
+            images: event.photos.map((photo) => NetworkImage(photo.src)).toList()));
   }
 
   Widget _buildFloatingActionButton(EventFull event) {
@@ -144,7 +144,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
           transform: Matrix4.identity()..scale(_scaleFromOffset(_offset)),
           child: FloatingActionButton(
             onPressed: () => onLikeOrDislike(event),
-            child: Icon(event.liked ? Icons.favorite : Icons.favorite_border),
+            child: Icon(event.liked ? Icons.person: Icons.person_outline),
           ),
         ));
   }
@@ -230,7 +230,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
   }
 
   void _share(EventFull event) {
-    final firstImage = event.photos.first;
+    final firstImage = event.mainPhoto;
 
     Share.plainText(
             text: "${firstImage ?? ""}\n"
