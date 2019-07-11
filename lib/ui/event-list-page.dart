@@ -48,7 +48,7 @@ class _EventListState extends State<EventListPage> {
     return Scaffold(
         appBar: SearchBar(
             controller: _searchController,
-            onQuerySubmitted: (query) {
+            onQueryChanged: (query) {
               setSearchQuery(query);
             },
             searchHint: "Название события",
