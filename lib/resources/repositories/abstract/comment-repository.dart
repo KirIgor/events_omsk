@@ -1,5 +1,4 @@
 import 'package:omsk_events/model/comment.dart';
-import 'package:omsk_events/model/success.dart';
 
 abstract class CommentRepository {
   Future<List<Comment>> fetchComments(
@@ -10,4 +9,6 @@ abstract class CommentRepository {
   Future<void> editComment(int id, String text);
 
   Future<void> deleteComment(int id);
+
+  Future<void> reportComment(int commentId);
 }

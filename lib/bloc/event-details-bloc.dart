@@ -9,6 +9,7 @@ import 'bloc-base.dart';
 class EventDetailsBloc extends BlocBase {
   final int _eventId;
   final EventRepository _eventRepository;
+  final CommentRepository _commentRepository;
 
   final detailsFetcher = PublishSubject<EventFull>();
 
@@ -19,7 +20,8 @@ class EventDetailsBloc extends BlocBase {
       @required EventRepository eventRepository,
       @required CommentRepository commentRepository})
       : _eventId = eventId,
-        _eventRepository = eventRepository;
+        _eventRepository = eventRepository,
+        _commentRepository = commentRepository;
 
   @override
   void init() {
@@ -58,5 +60,9 @@ class EventDetailsBloc extends BlocBase {
       detailsFetcher.add(event);
     } else
       throw Exception(success.errors);
+  }
+
+  Future<void> reportComment(int commentId) async {
+    _commentRepository.reportComment(commentId);
   }
 }

@@ -24,4 +24,7 @@ class ApiCommentRepository implements CommentRepository {
           {int eventId, int page = 0, int pageSize = 10}) =>
       commentsProvider.fetchComments(
           eventId: eventId, page: page, pageSize: pageSize);
+
+  @override
+  Future<void> reportComment(int commentId) => commentsProvider.reportComment(commentId: commentId);
 }
