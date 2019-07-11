@@ -455,8 +455,8 @@ class EventPageCommentFormState extends State<EventPageCommentForm> {
                   focusNode: _focusNode,
                   controller: _textEditingController,
                   validator: (text) {
-                    if (text.length > 250)
-                      return "Максимальная длина = 250 символов";
+                    if (text.length > 255)
+                      return "Максимальная длина = 255 символов";
                     else
                       return null;
                   },
