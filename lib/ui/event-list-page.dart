@@ -5,6 +5,7 @@ import 'package:omsk_events/bloc/event-list-bloc.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:omsk_events/model/event.dart';
 import 'package:loader_search_bar/loader_search_bar.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'event-item.dart';
 
@@ -19,6 +20,7 @@ class _EventListState extends State<EventListPage> {
   PagewiseLoadController<EventShort> _pagewiseLoadController;
   SearchBarController _searchController;
   EventListBloc _bloc;
+  final searchStream = PublishSubject<String>();
 
   void setSearchQuery(String query){
     _bloc.setSearchQuery(query);
@@ -45,11 +47,17 @@ class _EventListState extends State<EventListPage> {
       onCancelSearch: () { setSearchQuery(""); _searchController.cancelSearch();},
     );
 
+    searchStream.stream
+        .debounce(Duration(milliseconds: 800))
+        .listen((query){
+          setSearchQuery(query);
+        });
+
     return Scaffold(
         appBar: SearchBar(
             controller: _searchController,
             onQueryChanged: (query) {
-              setSearchQuery(query);
+              searchStream.add(query);
             },
             searchHint: "Название события",
             defaultBar: AppBar(
@@ -78,6 +86,7 @@ class _EventListState extends State<EventListPage> {
   @override
   void dispose() {
     _pagewiseLoadController.dispose();
+    searchStream.close();
     super.dispose();
   }
 }

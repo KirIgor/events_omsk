@@ -25,7 +25,7 @@ class EventItem extends StatelessWidget {
   }
 
   Widget getMainPhoto() {
-    if (_event.mainImage != null || _event.mainImage.isEmpty) {
+    if (_event.mainImage != null && _event.mainImage.isNotEmpty) {
       return FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
           image: _event.mainImage,
