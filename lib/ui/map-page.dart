@@ -161,15 +161,12 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   }
 
   getIcon(EventShort e){
-    if (e.isBig){
-        return BitmapDescriptor.defaultMarkerWithHue(e.id == _selected.id
-            ? BitmapDescriptor.hueOrange
-            : BitmapDescriptor.hueRed);
-    }
+    if (e.isBig) return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
 
-    return BitmapDescriptor.defaultMarkerWithHue(e.id == _selected.id
-        ? BitmapDescriptor.hueBlue
-        : BitmapDescriptor.hueAzure);
+    if(e.endDateTime != null) {
+    } else {
+
+    }
   }
 
   Set<Marker> _getAllMarkersFromEvents(List<EventShort> events) {
@@ -188,6 +185,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
               _controller.forward();
             },
             zIndex: 100.0,
+            infoWindow: InfoWindow(title: e.name),
             position: LatLng(e.latitude, e.longitude),
             icon: getIcon(e)
         )
