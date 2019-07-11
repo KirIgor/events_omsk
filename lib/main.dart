@@ -93,7 +93,7 @@ class _AppState extends State<App> {
     switch (_currentSelected) {
       case 0:
         return BlocWidget(
-            bloc: EventListBloc(repository: DI.eventRepository),
+            bloc: EventListBloc(eventRepository: DI.eventRepository),
             child: EventListPage());
       case 1:
         return BlocWidget(
@@ -153,7 +153,7 @@ class _AppState extends State<App> {
       case "/all_events":
         return MaterialPageRoute(
             builder: (context) => BlocWidget(
-                bloc: EventListBloc(repository: DI.eventRepository),
+                bloc: EventListBloc(eventRepository: DI.eventRepository),
                 child: EventListPage()));
       case "/event_details":
         {

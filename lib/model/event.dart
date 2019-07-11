@@ -16,6 +16,7 @@ class EventFull {
   bool liked;
   int _likesCount;
   String _mainImage;
+  bool _isBig;
 
   EventFull.fromJson(Map<String, dynamic> parsedJson) {
     _id = parsedJson["id"];
@@ -36,6 +37,7 @@ class EventFull {
     liked = parsedJson["liked"];
     _likesCount = parsedJson["likesCount"];
     _mainImage = parsedJson["mainImage"];
+    _isBig = parsedJson["isBig"];
   }
 
   int get id => _id;
@@ -52,6 +54,16 @@ class EventFull {
   List<Photo> get photos => _photos;
   int get likesCount => _likesCount;
   String get mainPhoto => _mainImage;
+
+  bool get isBig => _isBig;
+
+  bool isOnGoing() {
+    if (endDateTime == null) return false;
+
+    final currentMillis = DateTime.now().millisecondsSinceEpoch;
+    return (startDateTime.millisecondsSinceEpoch <= currentMillis &&
+        currentMillis <= endDateTime.millisecondsSinceEpoch);
+  }
 }
 
 enum OrderBy { likesCount, startDateTime }

@@ -17,10 +17,10 @@ class EventItem extends StatelessWidget {
 
   void _onShareClick(BuildContext context) {
     Share.plainText(
-        title: _event.name,
-        text: _event.mainImage ??
-            "" + "\n" + _event.name + "\n" + _event.description ??
-            "")
+            title: _event.name,
+            text: _event.mainImage ??
+                "" + "\n" + _event.name + "\n" + _event.description ??
+                "")
         .share();
   }
 
@@ -50,26 +50,12 @@ class EventItem extends StatelessWidget {
     return Container();
   }
 
-  Widget onGoing(BuildContext context) {
-    final currentMillis = DateTime
-        .now()
-        .millisecondsSinceEpoch;
-    if (_event.startDateTime.millisecondsSinceEpoch <= currentMillis &&
-        currentMillis <=
-            (_event.endDateTime?.millisecondsSinceEpoch ?? currentMillis))
-      return Container(
-        child: Text("Уже идет!",
-            style: TextStyle(color: Theme
-                .of(context)
-                .accentColor)),
-        margin: EdgeInsets.all(16),
-      );
-
-    return Container();
+  bool isPast(){
+    final currentMillis = DateTime.now().millisecondsSinceEpoch;
+    return (_event.endDateTime?.millisecondsSinceEpoch ?? currentMillis) < currentMillis;
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget getBody(BuildContext context){
     return Container(
       width: double.infinity,
       margin: EdgeInsets.all(8),
@@ -117,7 +103,6 @@ class EventItem extends StatelessWidget {
                         ),
                       ),
                       getDescription(),
-                      onGoing(context),
                       Container(
                           margin:
                           EdgeInsets.only(top: 8, left: 12.0, right: 4.0),
@@ -145,6 +130,15 @@ class EventItem extends StatelessWidget {
                     ],
                   )))),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_event.isOnGoing()){
+      return Banner(message: "Уже идет", color: Colors.green, location: BannerLocation.topEnd, child: getBody(context));
+    }
+
+    return getBody(context);
   }
 
   Widget isBig() {

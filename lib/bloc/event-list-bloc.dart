@@ -1,16 +1,18 @@
+import 'dart:async';
+
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:omsk_events/model/event.dart';
 import 'package:omsk_events/resources/repositories/abstract/event-repository.dart';
-import 'package:intl/intl.dart';
 
 import 'bloc-base.dart';
 
 class EventListBloc extends BlocBase {
-  final EventRepository _repository;
+  final EventRepository _eventRepository;
 
-  EventListBloc({@required EventRepository repository})
-      : _repository = repository;
+  EventListBloc({@required EventRepository eventRepository})
+      : _eventRepository = eventRepository;
 
   OrderBy _orderBy = OrderBy.likesCount;
   String _query;
@@ -21,11 +23,11 @@ class EventListBloc extends BlocBase {
     final startDateString = DateFormat("yyyy-MM-dd").format(startDate);
 
     if (_query == null || _query.isEmpty) {
-      return await _repository.fetchEvents(
+      return await _eventRepository.fetchEvents(
           page: page, pageSize: 5, orderBy: _orderBy, filter: {"fromStartDate" : startDateString}, followSettings: false);
     }
 
-    return await _repository.fetchEvents(
+    return await _eventRepository.fetchEvents(
         page: page, pageSize: 5, orderBy: _orderBy, filter: {
           "name": _query, "fromStartDate" : startDateString
     }, followSettings: false);
