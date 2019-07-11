@@ -54,27 +54,27 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
 
     _animationOut = Tween<Offset>(begin: Offset.zero, end: Offset(0.0, 1.0))
         .animate(CurvedAnimation(
-            parent: _controller,
-            curve: const Interval(
-              0.0,
-              0.5,
-              curve: Curves.easeOut,
-            )));
+        parent: _controller,
+        curve: const Interval(
+          0.0,
+          0.5,
+          curve: Curves.easeOut,
+        )));
     _animationIn =
         Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero)
             .animate(CurvedAnimation(
-                parent: _controller,
-                curve: const Interval(
-                  0.5,
-                  1,
-                  curve: Curves.easeIn,
-                )));
+            parent: _controller,
+            curve: const Interval(
+              0.5,
+              1,
+              curve: Curves.easeIn,
+            )));
 
     _mapController.future.then((controller) async {
       final markers = _getAllMarkersFromEvents(_events);
       _cityBounds = _calcCityBounds(markers);
       final filteredMarkers =
-          await _filterMarkers(markers, initialVisibleRegion, initZoom);
+      await _filterMarkers(markers, initialVisibleRegion, initZoom);
 
       setState(() {
         _markers = filteredMarkers;
@@ -108,83 +108,90 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   Widget _buildMap() {
     return Scaffold(
         body: Stack(alignment: Alignment.bottomCenter, children: <Widget>[
-      GoogleMap(
-        markers: _markers,
-        onMapCreated: (controller) {
-          print('sending controller');
-          _mapController.complete(controller);
-        },
-        rotateGesturesEnabled: false,
-        initialCameraPosition:
+          GoogleMap(
+            markers: _markers,
+            onMapCreated: (controller) {
+              print('sending controller');
+              _mapController.complete(controller);
+            },
+            rotateGesturesEnabled: false,
+            initialCameraPosition:
             CameraPosition(target: omskCameraPosition, zoom: initZoom),
-        onCameraMove: (pos) async {
-          if ((pos.zoom - _prevZoom).abs() < dZoomToChangeMarkers ||
-              pos.zoom > 14 && _prevZoom > 14) return;
+            onCameraMove: (pos) async {
+              if ((pos.zoom - _prevZoom).abs() < dZoomToChangeMarkers ||
+                  pos.zoom > 14 && _prevZoom > 14) return;
 
-          final GoogleMapController controller = await _mapController.future;
-          final visibleRegion = await controller.getVisibleRegion();
-          final markers = _getAllMarkersFromEvents(_events);
-          final filteredMarkers =
+              final GoogleMapController controller = await _mapController
+                  .future;
+              final visibleRegion = await controller.getVisibleRegion();
+              final markers = _getAllMarkersFromEvents(_events);
+              final filteredMarkers =
               await _filterMarkers(markers, visibleRegion, pos.zoom);
 
-          setState(() {
-            _prevZoom = pos.zoom;
-            _markers = filteredMarkers;
-          });
-        },
-      ),
-      Opacity(
-          opacity: _prev.id == -1 ? 0 : 1,
-          child: _buildEventTile(_prev, _animationOut)),
-      _buildEventTile(_selected, _animationIn)
-    ]));
+              setState(() {
+                _prevZoom = pos.zoom;
+                _markers = filteredMarkers;
+              });
+            },
+          ),
+          Opacity(
+              opacity: _prev.id == -1 ? 0 : 1,
+              child: _buildEventTile(_prev, _animationOut)),
+          _buildEventTile(_selected, _animationIn)
+        ]));
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: _eventBloc.allEvents,
-      builder: (context, AsyncSnapshot<List<EventShort>> snapshot) {
-        if (snapshot.hasData) {
-          _events = snapshot.data;
+    return Scaffold(
+        appBar: AppBar(title: Text("Карта"), backgroundColor: Colors.white),
+        body: StreamBuilder(
+          stream: _eventBloc.allEvents,
+          builder: (context, AsyncSnapshot<List<EventShort>> snapshot) {
+            if (snapshot.hasData) {
+              _events = snapshot.data;
 
-          return _buildMap();
-        } else if (snapshot.hasError) {
-          return Text(snapshot.error.toString());
-        }
-        return Center(child: CircularProgressIndicator());
-      },
-    );
+              return _buildMap();
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+            return Center(child: CircularProgressIndicator());
+          },
+        ));
+  }
+
+  getIcon(EventShort e){
+    if (e.isBig){
+        return BitmapDescriptor.defaultMarkerWithHue(e.id == _selected.id
+            ? BitmapDescriptor.hueOrange
+            : BitmapDescriptor.hueRed);
+    }
+
+    return BitmapDescriptor.defaultMarkerWithHue(e.id == _selected.id
+        ? BitmapDescriptor.hueBlue
+        : BitmapDescriptor.hueAzure);
   }
 
   Set<Marker> _getAllMarkersFromEvents(List<EventShort> events) {
     return events
-        .map((e) => Marker(
+        .map((e) =>
+        Marker(
             markerId: MarkerId(e.id.toString()),
             onTap: () {
               setState(() {
                 _prev = _selected;
                 _selected = e;
 
-                _markers = _markers
-                    .map((m) => Marker(
-                        markerId: m.markerId,
-                        position: m.position,
-                        onTap: m.onTap,
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                            int.parse(m.markerId.value) == _selected.id
-                                ? BitmapDescriptor.hueBlue
-                                : BitmapDescriptor.hueAzure)))
-                    .toSet();
+                _markers = _getAllMarkersFromEvents(events);
               });
               _controller.reset();
               _controller.forward();
             },
+            zIndex: 100.0,
             position: LatLng(e.latitude, e.longitude),
-            icon: BitmapDescriptor.defaultMarkerWithHue(e.id == _selected.id
-                ? BitmapDescriptor.hueBlue
-                : BitmapDescriptor.hueAzure)))
-        .toSet();
+            icon: getIcon(e)
+        )
+    ).toSet();
   }
 
   LatLngBounds _calcCityBounds(Set<Marker> markers) {
@@ -213,8 +220,8 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     return dx * dx + dy * dy;
   }
 
-  Future<Set<Marker>> _filterMarkers(
-      Set<Marker> markers, LatLngBounds bounds, double zoom) async {
+  Future<Set<Marker>> _filterMarkers(Set<Marker> markers, LatLngBounds bounds,
+      double zoom) async {
     if (zoom > 13) return markers;
 
     Set<Marker> res = Set();
@@ -247,18 +254,19 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         final gridElCenter = LatLng(
             gridElBounds.southwest.latitude +
                 (gridElBounds.northeast.latitude -
-                        gridElBounds.southwest.latitude) /
+                    gridElBounds.southwest.latitude) /
                     2,
             gridElBounds.southwest.longitude +
                 (gridElBounds.northeast.longitude -
-                        gridElBounds.southwest.longitude) /
+                    gridElBounds.southwest.longitude) /
                     2);
 
         final chosen = markers
             .where((m) => gridElBounds.contains(m.position))
             .toList()
-              ..sort((m1, m2) => (_distanceSquared(m2.position, gridElCenter) -
-                      _distanceSquared(m1.position, gridElCenter))
+          ..sort((m1, m2) =>
+              (_distanceSquared(m2.position, gridElCenter) -
+                  _distanceSquared(m1.position, gridElCenter))
                   .round());
 
         if (chosen.length != 0) res.add(chosen.first);

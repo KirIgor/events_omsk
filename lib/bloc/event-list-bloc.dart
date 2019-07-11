@@ -14,7 +14,7 @@ class EventListBloc extends BlocBase {
 
   final _eventsFetcher = PublishSubject<List<EventShort>>();
   final _loadingSubject = PublishSubject<bool>();
-  OrderBy orderBy = OrderBy.LIKES_COUNT;
+  OrderBy orderBy = OrderBy.likesCount;
 
   Observable<List<EventShort>> get allEvents => _eventsFetcher.stream;
 

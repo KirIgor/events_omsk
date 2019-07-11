@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:omsk_events/bloc/bloc-widget.dart';
-import 'package:omsk_events/bloc/event-list-bloc.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:share/share.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -27,7 +25,7 @@ class EventItem extends StatelessWidget {
   }
 
   Widget getMainPhoto() {
-    if (_event.mainImage != null) {
+    if (_event.mainImage != null || _event.mainImage.isEmpty) {
       return FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
           image: _event.mainImage,
@@ -49,6 +47,24 @@ class EventItem extends StatelessWidget {
             overflow: TextOverflow.ellipsis),
       );
     }
+    return Container();
+  }
+
+  Widget onGoing(BuildContext context) {
+    final currentMillis = DateTime
+        .now()
+        .millisecondsSinceEpoch;
+    if (_event.startDateTime.millisecondsSinceEpoch <= currentMillis &&
+        currentMillis <=
+            (_event.endDateTime?.millisecondsSinceEpoch ?? currentMillis))
+      return Container(
+        child: Text("Уже идет!",
+            style: TextStyle(color: Theme
+                .of(context)
+                .accentColor)),
+        margin: EdgeInsets.all(16),
+      );
+
     return Container();
   }
 
@@ -76,11 +92,14 @@ class EventItem extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(_event.name,
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87)),
+                            Row(children: <Widget>[
+                              isBig(),
+                              Text(_event.name,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87))
+                            ]),
                             Container(
                                 margin: EdgeInsets.only(top: 8),
                                 child: Row(children: <Widget>[
@@ -98,6 +117,7 @@ class EventItem extends StatelessWidget {
                         ),
                       ),
                       getDescription(),
+                      onGoing(context),
                       Container(
                           margin:
                           EdgeInsets.only(top: 8, left: 12.0, right: 4.0),
@@ -106,7 +126,7 @@ class EventItem extends StatelessWidget {
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Icon(Icons.favorite, color: Colors.black54),
+                                    Icon(Icons.group, color: Colors.black54),
                                     Container(
                                         margin: EdgeInsets.only(left: 4),
                                         child: Text(
@@ -125,5 +145,16 @@ class EventItem extends StatelessWidget {
                     ],
                   )))),
     );
+  }
+
+  Widget isBig() {
+    if (_event?.isBig == true) {
+      return Container(
+        margin: EdgeInsets.only(right: 4),
+        child: Tooltip(child: Icon(Icons.stars), message: "Большое событие"),
+      );
+    }
+
+    return Container();
   }
 }

@@ -42,10 +42,10 @@ class _EventListState extends State<EventListPage> {
                   itemBuilder: (context) => [
                         PopupMenuItem(
                             child: Text("По дате"),
-                            value: OrderBy.START_DATE_TIME),
+                            value: OrderBy.startDateTime),
                         PopupMenuItem(
                             child: Text("По количеству лайков"),
-                            value: OrderBy.LIKES_COUNT)
+                            value: OrderBy.likesCount)
                       ],
                   onSelected: (value) {
                     bloc.setOrderBy(value);

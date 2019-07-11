@@ -1,3 +1,5 @@
+import 'package:omsk_events/model/photo.dart';
+
 class EventFull {
   int _id;
   String _name;
@@ -10,9 +12,10 @@ class EventFull {
   String _phone;
   String _address;
   String _externalRef;
-  List<String> _photos;
+  List<Photo> _photos;
   bool liked;
   int _likesCount;
+  String _mainImage;
 
   EventFull.fromJson(Map<String, dynamic> parsedJson) {
     _id = parsedJson["id"];
@@ -29,9 +32,10 @@ class EventFull {
     _phone = parsedJson["phone"];
     _address = parsedJson["address"];
     _externalRef = parsedJson["externalRef"];
-    _photos = List<String>.from(parsedJson["photos"]);
+    _photos = (parsedJson["photos"] as List).map((json) => Photo.fromJson(json)).toList();
     liked = parsedJson["liked"];
     _likesCount = parsedJson["likesCount"];
+    _mainImage = parsedJson["mainImage"];
   }
 
   int get id => _id;
@@ -45,12 +49,11 @@ class EventFull {
   String get phone => _phone;
   String get address => _address;
   String get externalRef => _externalRef;
-  List<String> get photos => _photos;
+  List<Photo> get photos => _photos;
   int get likesCount => _likesCount;
-
-  String get mainPhoto => photos.isNotEmpty ? photos.first : null;
+  String get mainPhoto => _mainImage;
 }
 
-enum OrderBy { LIKES_COUNT, START_DATE_TIME }
+enum OrderBy { likesCount, startDateTime }
 
 enum OrderType { ASC, DESC }

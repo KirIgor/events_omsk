@@ -31,6 +31,7 @@ class TimetableListPageState extends State<TimetableListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text("Расписание"), backgroundColor: Colors.white),
       body: RefreshIndicator(
           child: StreamBuilder(
               stream: _timetableBloc.timetable,

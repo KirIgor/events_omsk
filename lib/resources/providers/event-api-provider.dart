@@ -21,7 +21,7 @@ class EventAPIProvider extends APIProvider {
   Future<List<EventShort>> fetchEvents(
       {int page = 0,
       int pageSize = 10,
-      OrderBy orderBy = OrderBy.LIKES_COUNT,
+      OrderBy orderBy = OrderBy.likesCount,
       OrderType orderType = OrderType.DESC}) async {
     final orderByText = orderBy.toString().split(".")[1];
     final orderTypeText = orderType.toString().split(".")[1];

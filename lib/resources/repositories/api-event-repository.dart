@@ -13,7 +13,7 @@ class ApiEventRepository implements EventRepository {
   Future<List<EventShort>> fetchEvents(
       {int page = 0,
         int pageSize = 10,
-        OrderBy orderBy = OrderBy.LIKES_COUNT,
+        OrderBy orderBy = OrderBy.likesCount,
         OrderType orderType = OrderType.DESC}) {
     return eventsProvider.fetchEvents(
         page: page, pageSize: pageSize, orderBy: orderBy, orderType: orderType
