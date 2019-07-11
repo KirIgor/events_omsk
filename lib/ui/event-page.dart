@@ -132,7 +132,8 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
             dotIncreaseSize: 1.3,
             autoplayDuration: const Duration(seconds: 5),
             boxFit: BoxFit.fitWidth,
-            images: event.photos.map((photo) => NetworkImage(photo.src)).toList()));
+            images:
+                event.photos.map((photo) => NetworkImage(photo.src)).toList()));
   }
 
   Widget _buildFloatingActionButton(EventFull event) {
@@ -144,7 +145,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
           transform: Matrix4.identity()..scale(_scaleFromOffset(_offset)),
           child: FloatingActionButton(
             onPressed: () => onLikeOrDislike(event),
-            child: Icon(event.liked ? Icons.person: Icons.person_outline),
+            child: Icon(event.liked ? Icons.person : Icons.person_outline),
           ),
         ));
   }
@@ -196,6 +197,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                                   )
                                 ])),
                                 EventPageComments(
+                                    bloc: _eventDetailsBloc,
                                     event: event,
                                     userInfo: userInfo,
                                     pagewiseLoadController:
@@ -427,7 +429,7 @@ class EventPageCommentFormState extends State<EventPageCommentForm> {
   void initState() {
     super.initState();
 
-    _userBloc = BlocWidget.of(context);
+    _userBloc = BlocWidget.of<UserBloc>(context);
     _focusNode.addListener(() {
       if (_focusNode.hasFocus && widget.userInfo == null) {
         _focusNode.unfocus();
@@ -500,51 +502,74 @@ class EventPageComments extends StatelessWidget {
   final UserInfo userInfo;
   final PagewiseLoadController<Comment> pagewiseLoadController;
   final Animation<double> commentFadeAnimation;
+  final EventDetailsBloc bloc;
 
   const EventPageComments(
       {Key key,
       this.event,
       this.pagewiseLoadController,
       this.commentFadeAnimation,
-      this.userInfo})
+      this.userInfo,
+      this.bloc})
       : super(key: key);
 
-  Widget _buildComment(Comment c) {
-    return Container(
-        key: Key(c.id.toString()),
-        margin: const EdgeInsets.only(top: 10),
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(c.userAvatar),
-          ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                c.userName,
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
-              Container(
-                  margin: const EdgeInsets.only(top: 5),
-                  child: Text(
-                    c.text,
-                    style: const TextStyle(fontSize: 14),
-                  )),
-              Container(
-                  margin: const EdgeInsets.only(top: 5),
-                  child: Text(
-                    DateFormat("d MMMM y H:mm", "ru_RU").format(c.modifiedAt),
-                    style: const TextStyle(fontSize: 13, color: Colors.grey),
-                  ))
-            ],
-          ),
-          onTap: () {
-            if (c.vkId != null) launch("https://vk.com/id${c.vkId}");
-          },
-        ));
+  void onReportComment(BuildContext context, Comment c) async {
+    await bloc.reportComment(c.id);
+    pagewiseLoadController.reset();
   }
 
-  Widget _buildDismissible(int index, Comment c) {
+  Widget _buildComment(BuildContext context, Comment c) {
+
+    return PopupMenuButton<String>(
+        itemBuilder: (context) => userInfo.vkId != null ? <PopupMenuEntry<String>>[
+              PopupMenuItem<String>(
+                child: Text("Пожаловаться"),
+                value: "report",
+              )
+            ] : [],
+        onSelected: (value) {
+          if (value == "report") {
+            onReportComment(context, c);
+          }
+        },
+        child: Container(
+            key: Key(c.id.toString()),
+            margin: const EdgeInsets.only(top: 10),
+            child: ListTile(
+              leading: GestureDetector(
+                  onTap: () {
+                    if (c.vkId != null) launch("https://vk.com/id${c.vkId}");
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: CachedNetworkImageProvider(c.userAvatar),
+                  )),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    c.userName,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  Container(
+                      margin: const EdgeInsets.only(top: 5),
+                      child: Text(
+                        c.text,
+                        style: const TextStyle(fontSize: 14),
+                      )),
+                  Container(
+                      margin: const EdgeInsets.only(top: 5),
+                      child: Text(
+                        DateFormat("d MMMM y H:mm", "ru_RU")
+                            .format(c.modifiedAt),
+                        style:
+                            const TextStyle(fontSize: 13, color: Colors.grey),
+                      ))
+                ],
+              ),
+            )));
+  }
+
+  Widget _buildDismissible(BuildContext context, int index, Comment c) {
     final dismissBackground = Container(
       color: Colors.red,
       child: ListTile(
@@ -562,9 +587,9 @@ class EventPageComments extends StatelessWidget {
             pagewiseLoadController.loadedItems.removeAt(index);
             DI.commentRepository.deleteComment(c.id);
           },
-          child: _buildComment(c));
+          child: _buildComment(context, c));
     } else
-      return _buildComment(c);
+      return _buildComment(context, c);
   }
 
   @override
@@ -575,9 +600,9 @@ class EventPageComments extends StatelessWidget {
         if (index == 0 && c.justCreated) {
           return FadeTransition(
               opacity: commentFadeAnimation,
-              child: _buildDismissible(index, c));
+              child: _buildDismissible(context, index, c));
         } else
-          return _buildDismissible(index, c);
+          return _buildDismissible(context, index, c);
       },
     );
   }

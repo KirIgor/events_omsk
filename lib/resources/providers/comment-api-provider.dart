@@ -11,13 +11,16 @@ class CommentAPIProvider extends APIProvider {
   final Client _client = Client();
   final TokenProvider _tokenProvider;
 
-  CommentAPIProvider({@required TokenProvider tokenProvider}):
-      _tokenProvider = tokenProvider;
+  CommentAPIProvider({@required TokenProvider tokenProvider})
+      : _tokenProvider = tokenProvider;
 
   Future<List<Comment>> fetchComments(
       {int eventId, int pageSize = 10, int page = 0}) async {
+    final token = await _tokenProvider.getToken();
     final response = await _client
-        .get("$baseURL/events/$eventId/comments?pageSize=$pageSize&page=$page");
+        .get("$baseURL/events/$eventId/comments?pageSize=$pageSize&page=$page",
+        headers: Map<String, String>()
+          ..putIfAbsent("Authorization", () => token));
 
     if (response.statusCode == 200) {
       return (json.decode(response.body) as List)
@@ -61,5 +64,16 @@ class CommentAPIProvider extends APIProvider {
           ..putIfAbsent("Authorization", () => token));
 
     if (response.statusCode != 204) throw Exception(response.body);
+  }
+
+  Future<void> reportComment({int commentId}) async {
+    final token = await _tokenProvider.getToken();
+    if (token == null) throw NotAuthorizedException();
+    final response = await _client.post("$baseURL/reports",
+        body: json.encode({"commentId": commentId}),
+        headers: Map<String, String>()
+          ..putIfAbsent("Content-type", () => "application/json")
+          ..putIfAbsent("Authorization", () => token));
+    if (response.statusCode != 200) throw Exception(response.body);
   }
 }

@@ -8,7 +8,8 @@ abstract class EventRepository {
       {int page = 0,
       int pageSize = 10,
       OrderBy orderBy = OrderBy.likesCount,
-      OrderType orderType = OrderType.DESC});
+      OrderType orderType = OrderType.DESC,
+      Map<String, dynamic> filter});
 
   Future<EventFull> fetchEvent(int id);
 
