@@ -9,7 +9,7 @@ abstract class EventRepository {
       int pageSize = 10,
       OrderBy orderBy = OrderBy.likesCount,
       OrderType orderType = OrderType.DESC,
-      Map<String, dynamic> filter});
+      Map<String, dynamic> filter, bool followSettings = true});
 
   Future<EventFull> fetchEvent(int id);
 

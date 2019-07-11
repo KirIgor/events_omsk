@@ -20,13 +20,13 @@ class _EventListState extends State<EventListPage> {
   PagewiseLoadController<EventShort> _pagewiseLoadController;
   SearchBarController _searchController;
   EventListBloc _bloc;
+  bool filterPast = false;
   final searchStream = PublishSubject<String>();
 
-  void setSearchQuery(String query){
+  void setSearchQuery(String query) {
     _bloc.setSearchQuery(query);
     _pagewiseLoadController.reset();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +43,19 @@ class _EventListState extends State<EventListPage> {
         itemBuilder: (context, event, index) => EventItem(event: event));
 
     _searchController = SearchBarController(
-      onClearQuery: () { setSearchQuery(""); _searchController.clearQuery(); },
-      onCancelSearch: () { setSearchQuery(""); _searchController.cancelSearch();},
+      onClearQuery: () {
+        setSearchQuery("");
+        _searchController.clearQuery();
+      },
+      onCancelSearch: () {
+        setSearchQuery("");
+        _searchController.cancelSearch();
+      },
     );
 
-    searchStream.stream
-        .debounce(Duration(milliseconds: 800))
-        .listen((query){
-          setSearchQuery(query);
-        });
+    searchStream.stream.debounce(Duration(milliseconds: 800)).listen((query) {
+      setSearchQuery(query);
+    });
 
     return Scaffold(
         appBar: SearchBar(
@@ -61,25 +65,49 @@ class _EventListState extends State<EventListPage> {
             },
             searchHint: "Название события",
             defaultBar: AppBar(
-                backgroundColor: Colors.white,
-                title: Text("Список событий"),
-                actions: <Widget>[
-                  PopupMenuButton(
-                      tooltip: "Сортировка",
-                      icon: Icon(Icons.sort),
-                      itemBuilder: (context) => [
-                            PopupMenuItem(
-                                child: Text("По дате"),
-                                value: OrderBy.startDateTime),
-                            PopupMenuItem(
-                                child: Text("По количеству лайков"),
-                                value: OrderBy.likesCount)
-                          ],
-                      onSelected: (value) {
-                        _bloc.setOrderBy(value);
-                        _pagewiseLoadController.reset();
-                      })
-                ])),
+              backgroundColor: Colors.white,
+              title: Text("Список событий"),
+              actions: <Widget>[
+                PopupMenuButton(
+                    tooltip: "Сортировка",
+                    icon: Icon(Icons.sort),
+                    itemBuilder: (context) =>
+                    [
+                      PopupMenuItem(
+                          child: Text("По дате"),
+                          value: OrderBy.startDateTime),
+                      PopupMenuItem(
+                          child: Text("По количеству лайков"),
+                          value: OrderBy.likesCount)
+                    ],
+                    onSelected: (value) {
+                      _bloc.setOrderBy(value);
+                      _pagewiseLoadController.reset();
+                    }),
+
+                PopupMenuButton(
+                  tooltip: "Фильтрация",
+                  icon: Icon(Icons.filter_list),
+                  itemBuilder: (context) =>
+                  [CheckedPopupMenuItem(
+                    child: Text("Убрать прошедшие"),
+                    value: "removePast",
+                    checked: filterPast,
+                  )
+                  ]
+                  ,
+                  onSelected: (value) {
+                    if (value == "removePast") {
+                      _bloc.changeFilterPast(!filterPast);
+                      setState(() {
+                        filterPast = !filterPast;
+                      });
+                      _pagewiseLoadController.reset();
+                    }
+                  },
+                )
+              ],
+            )),
         body: pagewiseList);
   }
 

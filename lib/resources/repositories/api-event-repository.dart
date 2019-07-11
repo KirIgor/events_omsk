@@ -15,9 +15,10 @@ class ApiEventRepository implements EventRepository {
       int pageSize = 10,
       OrderBy orderBy = OrderBy.likesCount,
       OrderType orderType = OrderType.DESC,
-      Map<String, dynamic> filter}) {
+      Map<String, dynamic> filter,
+      bool followSettings = true}) {
     return eventsProvider.fetchEvents(
-        page: page, pageSize: pageSize, orderBy: orderBy, orderType: orderType, filter: filter);
+        page: page, pageSize: pageSize, orderBy: orderBy, orderType: orderType, filter: filter, followSettings: followSettings);
   }
 
   @override

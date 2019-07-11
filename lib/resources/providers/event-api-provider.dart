@@ -23,16 +23,19 @@ class EventAPIProvider extends APIProvider {
       int pageSize = 10,
       OrderBy orderBy = OrderBy.likesCount,
       OrderType orderType = OrderType.DESC,
-      Map<String, dynamic> filter}) async {
+      Map<String, dynamic> filter,
+      bool followSettings = true}) async {
     final orderByText = orderBy.toString().split(".")[1];
     final orderTypeText = orderType.toString().split(".")[1];
 
     String url;
     if (filter != null) {
       final filterJson = json.encode(filter);
-      url = "$baseURL/events?pageSize=$pageSize&page=$page&orderBy=$orderByText&orderType=$orderTypeText&filter=$filterJson";
+      url =
+      "$baseURL/events?pageSize=$pageSize&page=$page&orderBy=$orderByText&orderType=$orderTypeText&filter=$filterJson&followSettings=$followSettings";
     } else {
-      url = "$baseURL/events?pageSize=$pageSize&page=$page&orderBy=$orderByText&orderType=$orderTypeText";
+      url =
+      "$baseURL/events?pageSize=$pageSize&page=$page&orderBy=$orderByText&orderType=$orderTypeText&followSettings=$followSettings";
     }
 
     final response = await _client.get(url);
