@@ -4,6 +4,7 @@ import 'package:omsk_events/bloc/bloc-widget.dart';
 import 'package:omsk_events/bloc/event-list-bloc.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:omsk_events/model/event.dart';
+import 'package:loader_search_bar/loader_search_bar.dart';
 
 import 'event-item.dart';
 
@@ -16,14 +17,22 @@ class EventListPage extends StatefulWidget {
 
 class _EventListState extends State<EventListPage> {
   PagewiseLoadController<EventShort> _pagewiseLoadController;
+  SearchBarController _searchController;
+  EventListBloc _bloc;
+
+  void setSearchQuery(String query){
+    _bloc.setSearchQuery(query);
+    _pagewiseLoadController.reset();
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocWidget.of<EventListBloc>(context);
+    _bloc = BlocWidget.of<EventListBloc>(context);
 
     _pagewiseLoadController = PagewiseLoadController<EventShort>(
         pageFuture: (pageIndex) {
-          return bloc.fetchNewEvents(pageIndex);
+          return _bloc.fetchNewEvents(pageIndex);
         },
         pageSize: 5);
 
@@ -31,27 +40,38 @@ class _EventListState extends State<EventListPage> {
         pageLoadController: _pagewiseLoadController,
         itemBuilder: (context, event, index) => EventItem(event: event));
 
+    _searchController = SearchBarController(
+      onClearQuery: () { setSearchQuery(""); _searchController.clearQuery(); },
+      onCancelSearch: () { setSearchQuery(""); _searchController.cancelSearch();},
+    );
+
     return Scaffold(
-        appBar: AppBar(
-            backgroundColor: Colors.white,
-            title: Text("Список событий"),
-            actions: <Widget>[
-              PopupMenuButton(
-                  tooltip: "Сортировка",
-                  icon: Icon(Icons.sort),
-                  itemBuilder: (context) => [
-                        PopupMenuItem(
-                            child: Text("По дате"),
-                            value: OrderBy.startDateTime),
-                        PopupMenuItem(
-                            child: Text("По количеству лайков"),
-                            value: OrderBy.likesCount)
-                      ],
-                  onSelected: (value) {
-                    bloc.setOrderBy(value);
-                    _pagewiseLoadController.reset();
-                  })
-            ]),
+        appBar: SearchBar(
+            controller: _searchController,
+            onQuerySubmitted: (query) {
+              setSearchQuery(query);
+            },
+            searchHint: "Название события",
+            defaultBar: AppBar(
+                backgroundColor: Colors.white,
+                title: Text("Список событий"),
+                actions: <Widget>[
+                  PopupMenuButton(
+                      tooltip: "Сортировка",
+                      icon: Icon(Icons.sort),
+                      itemBuilder: (context) => [
+                            PopupMenuItem(
+                                child: Text("По дате"),
+                                value: OrderBy.startDateTime),
+                            PopupMenuItem(
+                                child: Text("По количеству лайков"),
+                                value: OrderBy.likesCount)
+                          ],
+                      onSelected: (value) {
+                        _bloc.setOrderBy(value);
+                        _pagewiseLoadController.reset();
+                      })
+                ])),
         body: pagewiseList);
   }
 

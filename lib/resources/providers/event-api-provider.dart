@@ -22,12 +22,20 @@ class EventAPIProvider extends APIProvider {
       {int page = 0,
       int pageSize = 10,
       OrderBy orderBy = OrderBy.likesCount,
-      OrderType orderType = OrderType.DESC}) async {
+      OrderType orderType = OrderType.DESC,
+      Map<String, dynamic> filter}) async {
     final orderByText = orderBy.toString().split(".")[1];
     final orderTypeText = orderType.toString().split(".")[1];
 
-    final response = await _client.get(
-        "$baseURL/events?pageSize=$pageSize&page=$page&orderBy=$orderByText&orderType=$orderTypeText");
+    String url;
+    if (filter != null) {
+      final filterJson = json.encode(filter);
+      url = "$baseURL/events?pageSize=$pageSize&page=$page&orderBy=$orderByText&orderType=$orderTypeText&filter=$filterJson";
+    } else {
+      url = "$baseURL/events?pageSize=$pageSize&page=$page&orderBy=$orderByText&orderType=$orderTypeText";
+    }
+
+    final response = await _client.get(url);
 
     if (response.statusCode == 200) {
       return (json.decode(response.body) as List)

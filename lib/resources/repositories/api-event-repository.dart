@@ -12,12 +12,12 @@ class ApiEventRepository implements EventRepository {
   @override
   Future<List<EventShort>> fetchEvents(
       {int page = 0,
-        int pageSize = 10,
-        OrderBy orderBy = OrderBy.likesCount,
-        OrderType orderType = OrderType.DESC}) {
+      int pageSize = 10,
+      OrderBy orderBy = OrderBy.likesCount,
+      OrderType orderType = OrderType.DESC,
+      Map<String, dynamic> filter}) {
     return eventsProvider.fetchEvents(
-        page: page, pageSize: pageSize, orderBy: orderBy, orderType: orderType
-    );
+        page: page, pageSize: pageSize, orderBy: orderBy, orderType: orderType, filter: filter);
   }
 
   @override

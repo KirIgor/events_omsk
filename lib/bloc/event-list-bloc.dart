@@ -14,21 +14,25 @@ class EventListBloc extends BlocBase {
 
   final _eventsFetcher = PublishSubject<List<EventShort>>();
   final _loadingSubject = PublishSubject<bool>();
-  OrderBy orderBy = OrderBy.likesCount;
+  OrderBy _orderBy = OrderBy.likesCount;
+  String _query;
 
   Observable<List<EventShort>> get allEvents => _eventsFetcher.stream;
 
-  Observable<bool> get isNewEventsLoading => _loadingSubject.stream;
-
-  final List<EventShort> loadedEvents = List();
+  final List<EventShort> _loadedEvents = List();
 
   Future<List<EventShort>> fetchNewEvents(int page) async {
+    if (_query == null || _query.isEmpty) {
+      return await _repository.fetchEvents(
+          page: page, pageSize: 5, orderBy: _orderBy);
+    }
+
     return await _repository.fetchEvents(
-        page: page, pageSize: 5, orderBy: orderBy);
+        page: page, pageSize: 5, orderBy: _orderBy, filter: {"name": _query});
   }
 
   Future<void> refresh() async {
-    loadedEvents.clear();
+    _loadedEvents.clear();
     await fetchNewEvents(0);
   }
 
@@ -39,7 +43,11 @@ class EventListBloc extends BlocBase {
   }
 
   void setOrderBy(OrderBy value) async {
-    orderBy = value;
+    _orderBy = value;
     refresh();
+  }
+
+  void setSearchQuery(String query) {
+    _query = query;
   }
 }
