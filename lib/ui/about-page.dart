@@ -31,11 +31,10 @@ class AboutPage extends StatelessWidget {
                     ),
                     child: Image(
                       fit: BoxFit.fill,
-                      image: AssetImage('images/logo.jpg'),
+                      image: AssetImage('assets/logo.png'),
                     ) //image
                     ), //container im
               ), //cliprr
-
               new Container(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
