@@ -97,7 +97,7 @@ class _AppState extends State<App> {
             child: EventListPage());
       case 1:
         return BlocWidget(
-            bloc: EventMapBloc(repository: DI.eventRepository),
+            bloc: EventMapBloc(eventRepository: DI.eventRepository, settingRepository: DI.settingRepository),
             child: MapPage());
       case 2:
         return BlocWidget(
