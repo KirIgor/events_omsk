@@ -150,6 +150,56 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
         ));
   }
 
+  bool isOnGoing(_event) {
+    final currentMillis = DateTime.now().millisecondsSinceEpoch;
+    return (_event.startDateTime.millisecondsSinceEpoch <= currentMillis &&
+        currentMillis <=
+            (_event.endDateTime?.millisecondsSinceEpoch ?? currentMillis));
+  }
+
+  Widget getBody(EventFull event, UserInfo userInfo){
+    return Stack(
+      children: <Widget>[
+        CustomScrollView(
+          controller: _controller,
+          slivers: <Widget>[
+            SliverAppBar(
+                expandedHeight: widget._topBarHeight,
+                pinned: true,
+                floating: false,
+                snap: false,
+                actions: _buildActions(event),
+                flexibleSpace:
+                _buildFlexibleSpaceBar(event)),
+            SliverList(
+                delegate: SliverChildListDelegate(<Widget>[
+                  EventPageInfo(event: event),
+                  EventPageMap(event: event),
+                  EventPageContact(event: event),
+                  EventPageToAlbumAndVK(event: event),
+                  EventPageCommentForm(
+                    pagewiseLoadController:
+                    _pagewiseLoadController,
+                    commentFadeAnimationController:
+                    _animationController,
+                    event: event,
+                    userInfo: userInfo,
+                  )
+                ])),
+            EventPageComments(
+                bloc: _eventDetailsBloc,
+                event: event,
+                userInfo: userInfo,
+                pagewiseLoadController:
+                _pagewiseLoadController,
+                commentFadeAnimation: _commentFadeAnimation)
+          ],
+        ),
+        _buildFloatingActionButton(event)
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -167,47 +217,8 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                               ConnectionState.active) {
                         UserInfo userInfo = userSnapshot.data;
                         EventFull event = eventSnapshot.data;
+                        return getBody(event, userInfo);
 
-                        return Stack(
-                          children: <Widget>[
-                            CustomScrollView(
-                              controller: _controller,
-                              slivers: <Widget>[
-                                SliverAppBar(
-                                    expandedHeight: widget._topBarHeight,
-                                    pinned: true,
-                                    floating: false,
-                                    snap: false,
-                                    actions: _buildActions(event),
-                                    flexibleSpace:
-                                        _buildFlexibleSpaceBar(event)),
-                                SliverList(
-                                    delegate: SliverChildListDelegate(<Widget>[
-                                  EventPageInfo(event: event),
-                                  EventPageMap(event: event),
-                                  EventPageContact(event: event),
-                                  EventPageToAlbumAndVK(event: event),
-                                  EventPageCommentForm(
-                                    pagewiseLoadController:
-                                        _pagewiseLoadController,
-                                    commentFadeAnimationController:
-                                        _animationController,
-                                    event: event,
-                                    userInfo: userInfo,
-                                  )
-                                ])),
-                                EventPageComments(
-                                    bloc: _eventDetailsBloc,
-                                    event: event,
-                                    userInfo: userInfo,
-                                    pagewiseLoadController:
-                                        _pagewiseLoadController,
-                                    commentFadeAnimation: _commentFadeAnimation)
-                              ],
-                            ),
-                            _buildFloatingActionButton(event)
-                          ],
-                        );
                       } else {
                         return Center(child: CircularProgressIndicator());
                       }
@@ -266,6 +277,22 @@ class EventPageInfo extends StatelessWidget {
     }
   }
 
+  Widget buildTitle() {
+    if (event.isBig)
+      return ListTile(
+        leading: Icon(Icons.stars, size: 30),
+        title: Text(event.name,
+            style: const TextStyle(
+                fontSize: 25, fontWeight: FontWeight.w500)),
+      );
+
+    return ListTile(
+      title: Text(event.name,
+          style: const TextStyle(
+              fontSize: 25, fontWeight: FontWeight.w500)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -274,11 +301,8 @@ class EventPageInfo extends StatelessWidget {
         children: <Widget>[
           Container(
               margin: const EdgeInsets.only(top: 25),
-              child: ListTile(
-                title: Text(event.name,
-                    style: const TextStyle(
-                        fontSize: 25, fontWeight: FontWeight.w500)),
-              )),
+              child: buildTitle()
+          ),
           ListTile(
               title: Text(_eventTimeBounds(event),
                   style: const TextStyle(fontStyle: FontStyle.italic)),

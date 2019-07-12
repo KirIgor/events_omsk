@@ -71,31 +71,28 @@ class _EventListState extends State<EventListPage> {
                 PopupMenuButton(
                     tooltip: "Сортировка",
                     icon: Icon(Icons.sort),
-                    itemBuilder: (context) =>
-                    [
-                      PopupMenuItem(
-                          child: Text("По дате"),
-                          value: OrderBy.startDateTime),
-                      PopupMenuItem(
-                          child: Text("По количеству лайков"),
-                          value: OrderBy.likesCount)
-                    ],
+                    itemBuilder: (context) => [
+                          PopupMenuItem(
+                              child: Text("По дате"),
+                              value: OrderBy.startDateTime),
+                          PopupMenuItem(
+                              child: Text("По количеству лайков"),
+                              value: OrderBy.likesCount)
+                        ],
                     onSelected: (value) {
                       _bloc.setOrderBy(value);
                       _pagewiseLoadController.reset();
                     }),
-
                 PopupMenuButton(
                   tooltip: "Фильтрация",
                   icon: Icon(Icons.filter_list),
-                  itemBuilder: (context) =>
-                  [CheckedPopupMenuItem(
-                    child: Text("Убрать прошедшие"),
-                    value: "removePast",
-                    checked: filterPast,
-                  )
-                  ]
-                  ,
+                  itemBuilder: (context) => [
+                        CheckedPopupMenuItem(
+                          child: Text("Убрать прошедшие"),
+                          value: "removePast",
+                          checked: filterPast,
+                        )
+                      ],
                   onSelected: (value) {
                     if (value == "removePast") {
                       _bloc.changeFilterPast(!filterPast);

@@ -40,4 +40,12 @@ class EventShort {
   int get likesCount => _likesCount;
   String get mainImage => _mainImage;
   bool get isBig => _isBig;
+
+  bool isOnGoing() {
+    if (endDateTime == null) return false;
+
+    final currentMillis = DateTime.now().millisecondsSinceEpoch;
+    return (startDateTime.millisecondsSinceEpoch <= currentMillis &&
+        currentMillis <= endDateTime.millisecondsSinceEpoch);
+  }
 }
