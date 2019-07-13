@@ -42,8 +42,7 @@ class TimetableItem extends StatelessWidget {
                 Container(
                     margin: EdgeInsets.only(left: 4),
                     child: Text(
-                      "${DateFormat("dd.MM, hh:mm").format(_event.startDateTime)}"
-                      "${_event.endDateTime == null ? "" : DateFormat(" - dd.MM, hh:mm").format(_event.endDateTime)}",
+                      _event.eventTimeBounds(),
                       style: TextStyle(color: Colors.black45),
                     )),
               ]),

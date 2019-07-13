@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import 'package:omsk_events/model/photo.dart';
 
 class EventFull {
@@ -18,6 +20,10 @@ class EventFull {
   String _mainImage;
   bool _isBig;
 
+  EventFull(DateTime startDateTime, DateTime endDateTime)
+      : _startDateTime = startDateTime,
+        _endDateTime = endDateTime;
+
   EventFull.fromJson(Map<String, dynamic> parsedJson) {
     _id = parsedJson["id"];
     _name = parsedJson["name"];
@@ -33,11 +39,28 @@ class EventFull {
     _phone = parsedJson["phone"];
     _address = parsedJson["address"];
     _externalRef = parsedJson["externalRef"];
-    _photos = (parsedJson["photos"] as List).map((json) => Photo.fromJson(json)).toList();
+    _photos = (parsedJson["photos"] as List)
+        .map((json) => Photo.fromJson(json))
+        .toList();
     liked = parsedJson["liked"];
     _likesCount = parsedJson["likesCount"];
     _mainImage = parsedJson["mainImage"];
     _isBig = parsedJson["isBig"];
+  }
+
+  String eventTimeBounds() {
+    if (this.endDateTime == null)
+      return "${DateFormat("d MMMM H:mm", "ru_RU").format(this.startDateTime)}";
+
+    if (this.startDateTime.year == this.endDateTime.year &&
+        this.startDateTime.month == this.endDateTime.month &&
+        this.startDateTime.day == this.endDateTime.day) {
+      return "${DateFormat("d MMMM H:mm", "ru_RU").format(this.startDateTime)} "
+          "- ${DateFormat("Hm", "ru_RU").format(this.endDateTime)}";
+    } else {
+      return "${DateFormat("d MMMM H:mm", "ru_RU").format(this.startDateTime)} "
+          "- ${DateFormat("d MMMM H:mm", "ru_RU").format(this.endDateTime)}";
+    }
   }
 
   int get id => _id;

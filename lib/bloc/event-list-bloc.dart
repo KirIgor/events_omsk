@@ -19,18 +19,25 @@ class EventListBloc extends BlocBase {
   bool _filterPast = false;
 
   Future<List<EventShort>> fetchNewEvents(int page) async {
-    final startDate = _filterPast ? DateTime.now() : DateTime.fromMicrosecondsSinceEpoch(0);
+    final startDate =
+        _filterPast ? DateTime.now() : DateTime.fromMicrosecondsSinceEpoch(0);
     final startDateString = DateFormat("yyyy-MM-dd").format(startDate);
 
     if (_query == null || _query.isEmpty) {
       return await _eventRepository.fetchEvents(
-          page: page, pageSize: 5, orderBy: _orderBy, filter: {"fromStartDate" : startDateString}, followSettings: false);
+          page: page,
+          pageSize: 5,
+          orderBy: _orderBy,
+          filter: {"fromStartDate": startDateString},
+          followSettings: false);
     }
 
     return await _eventRepository.fetchEvents(
-        page: page, pageSize: 5, orderBy: _orderBy, filter: {
-          "name": _query, "fromStartDate" : startDateString
-    }, followSettings: false);
+        page: page,
+        pageSize: 5,
+        orderBy: _orderBy,
+        filter: {"name": _query, "fromStartDate": startDateString},
+        followSettings: false);
   }
 
   Future<void> refresh() async {
@@ -50,5 +57,4 @@ class EventListBloc extends BlocBase {
     _filterPast = value;
     refresh();
   }
-
 }

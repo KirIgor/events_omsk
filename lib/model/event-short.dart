@@ -1,3 +1,5 @@
+import 'event.dart';
+
 class EventShort {
   int _id;
   String _name;
@@ -28,6 +30,10 @@ class EventShort {
     _likesCount = parsedJson["likesCount"];
     _mainImage = parsedJson["mainImage"];
     _isBig = parsedJson["big"];
+  }
+
+  String eventTimeBounds() {
+    return EventFull(startDateTime, endDateTime).eventTimeBounds();
   }
 
   int get id => _id;

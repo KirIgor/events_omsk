@@ -1,4 +1,6 @@
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
+
 import 'package:omsk_events/model/event-short.dart';
 import 'package:omsk_events/model/setting.dart';
 import 'package:omsk_events/resources/repositories/abstract/event-repository.dart';
@@ -14,7 +16,8 @@ class EventMapBloc extends BlocBase {
   EventMapBloc(
       {@required EventRepository eventRepository,
       @required SettingRepository settingRepository})
-      : _eventRepository = eventRepository, _settingRepository = settingRepository;
+      : _eventRepository = eventRepository,
+        _settingRepository = settingRepository;
 
   final _eventsFetcher = PublishSubject<List<EventShort>>();
   final _settingsFetcher = PublishSubject<List<Setting>>();
@@ -22,9 +25,10 @@ class EventMapBloc extends BlocBase {
   Observable<List<EventShort>> get allEvents => _eventsFetcher.stream;
   Observable<List<Setting>> get allSettings => _settingsFetcher.stream;
 
-  Future<void> fetchAllEvents() async {
+  Future<List<EventShort>> fetchAllEvents() async {
     List<EventShort> events = await _eventRepository.fetchEvents(pageSize: -1);
     _eventsFetcher.sink.add(events);
+    return events;
   }
 
   Future<void> fetchAllSettings() async {

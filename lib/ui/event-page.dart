@@ -157,7 +157,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
             (_event.endDateTime?.millisecondsSinceEpoch ?? currentMillis));
   }
 
-  Widget getBody(EventFull event, UserInfo userInfo){
+  Widget getBody(EventFull event, UserInfo userInfo) {
     return Stack(
       children: <Widget>[
         CustomScrollView(
@@ -169,29 +169,25 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                 floating: false,
                 snap: false,
                 actions: _buildActions(event),
-                flexibleSpace:
-                _buildFlexibleSpaceBar(event)),
+                flexibleSpace: _buildFlexibleSpaceBar(event)),
             SliverList(
                 delegate: SliverChildListDelegate(<Widget>[
-                  EventPageInfo(event: event),
-                  EventPageMap(event: event),
-                  EventPageContact(event: event),
-                  EventPageToAlbumAndVK(event: event),
-                  EventPageCommentForm(
-                    pagewiseLoadController:
-                    _pagewiseLoadController,
-                    commentFadeAnimationController:
-                    _animationController,
-                    event: event,
-                    userInfo: userInfo,
-                  )
-                ])),
+              EventPageInfo(event: event),
+              EventPageMap(event: event),
+              EventPageContact(event: event),
+              EventPageToAlbumAndVK(event: event),
+              EventPageCommentForm(
+                pagewiseLoadController: _pagewiseLoadController,
+                commentFadeAnimationController: _animationController,
+                event: event,
+                userInfo: userInfo,
+              )
+            ])),
             EventPageComments(
                 bloc: _eventDetailsBloc,
                 event: event,
                 userInfo: userInfo,
-                pagewiseLoadController:
-                _pagewiseLoadController,
+                pagewiseLoadController: _pagewiseLoadController,
                 commentFadeAnimation: _commentFadeAnimation)
           ],
         ),
@@ -218,7 +214,6 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                         UserInfo userInfo = userSnapshot.data;
                         EventFull event = eventSnapshot.data;
                         return getBody(event, userInfo);
-
                       } else {
                         return Center(child: CircularProgressIndicator());
                       }
@@ -282,14 +277,12 @@ class EventPageInfo extends StatelessWidget {
       return ListTile(
         leading: Icon(Icons.stars, size: 30),
         title: Text(event.name,
-            style: const TextStyle(
-                fontSize: 25, fontWeight: FontWeight.w500)),
+            style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w500)),
       );
 
     return ListTile(
       title: Text(event.name,
-          style: const TextStyle(
-              fontSize: 25, fontWeight: FontWeight.w500)),
+          style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w500)),
     );
   }
 
@@ -300,11 +293,9 @@ class EventPageInfo extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Container(
-              margin: const EdgeInsets.only(top: 25),
-              child: buildTitle()
-          ),
+              margin: const EdgeInsets.only(top: 25), child: buildTitle()),
           ListTile(
-              title: Text(_eventTimeBounds(event),
+              title: Text(event.eventTimeBounds(),
                   style: const TextStyle(fontStyle: FontStyle.italic)),
               trailing: const Icon(
                 Icons.event_note,
@@ -316,21 +307,6 @@ class EventPageInfo extends StatelessWidget {
       ),
       padding: const EdgeInsets.only(bottom: 20),
     ));
-  }
-
-  String _eventTimeBounds(EventFull event) {
-    if (event.endDateTime == null)
-      return "${DateFormat("d MMMM y H:mm", "ru_RU").format(event.startDateTime)}";
-
-    if (event.startDateTime.year == event.endDateTime.year &&
-        event.startDateTime.month == event.endDateTime.month &&
-        event.startDateTime.day == event.endDateTime.day) {
-      return "${DateFormat("d MMMM y H:mm", "ru_RU").format(event.startDateTime)} "
-          "- ${DateFormat("Hm", "ru_RU").format(event.endDateTime)}";
-    } else {
-      return "${DateFormat("d MMMM y H:mm", "ru_RU").format(event.endDateTime)} "
-          "- ${DateFormat("d MMMM y H:mm", "ru_RU").format(event.endDateTime)}";
-    }
   }
 }
 
@@ -543,14 +519,15 @@ class EventPageComments extends StatelessWidget {
   }
 
   Widget _buildComment(BuildContext context, Comment c) {
-
     return PopupMenuButton<String>(
-        itemBuilder: (context) => userInfo.vkId != null ? <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                child: Text("Пожаловаться"),
-                value: "report",
-              )
-            ] : [],
+        itemBuilder: (context) => userInfo.vkId != null
+            ? <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  child: Text("Пожаловаться"),
+                  value: "report",
+                )
+              ]
+            : [],
         onSelected: (value) {
           if (value == "report") {
             onReportComment(context, c);

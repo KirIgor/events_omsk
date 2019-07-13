@@ -17,7 +17,7 @@ class SettingAPIProvider extends APIProvider {
     final orderByText = orderBy.toString().split(".")[1];
     final orderTypeText = orderType.toString().split(".")[1];
 
-    final response = await _client.get("$baseURL/events?pageSize=$pageSize&page=$page&orderBy=$orderByText&orderType=$orderTypeText");
+    final response = await _client.get("$baseURL/settings?pageSize=$pageSize&page=$page&orderBy=$orderByText&orderType=$orderTypeText");
 
     if (response.statusCode == 200) {
       return (json.decode(response.body) as List)
