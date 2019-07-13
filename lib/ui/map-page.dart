@@ -189,13 +189,11 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         .where((setting) => setting.key.startsWith("SPECIAL_DATE"))
         .toList();
 
-    specialDates.forEach((setting) {
+    return specialDates.any((setting) {
       final specialDate = DateTime.parse(setting.value);
-      if (e.startDateTime.isBefore(specialDate) &&
-          e.endDateTime.isAfter(specialDate)) return true;
+      return (e.startDateTime.isBefore(specialDate) &&
+          e.endDateTime.isAfter(specialDate));
     });
-
-    return false;
   }
 
   _getIcon(List<Setting> settings, EventShort e) {
@@ -304,7 +302,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
               leading: Icon(Icons.location_on,
                   color: Color.fromARGB(255, 255, 0, 255)),
               title: Text(
-                  "Попадают на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
+                  "Длящиеся несколько дней и выпадающие на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
             ),
             ListTile(
               leading: Icon(Icons.location_on, color: Colors.orange),
