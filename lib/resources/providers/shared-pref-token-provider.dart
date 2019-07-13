@@ -12,6 +12,7 @@ class SharedPreferenceTokenProvider implements TokenProvider {
     if (_token != null) return _token;
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(TOKEN_KEY);
+    if (token == null) return token;
     _token = token;
     return token;
   }

@@ -17,6 +17,18 @@ class SharedPreferenceUserInfoProvider implements UserInfoProvider {
         storedUserInfo == null ? null : json.decode(storedUserInfo);
     final userInfo =
         decodedJson == null ? null : UserInfo.fromJson(decodedJson);
+
+    if (userInfo == null || userInfo.token == null) return null;
+
+    final expiresIn = DateTime.fromMillisecondsSinceEpoch(json.decode(
+            String.fromCharCodes(
+                base64Decode(userInfo.token.split(".")[1])))["exp"] *
+        1000);
+    if (expiresIn.isBefore(DateTime.now())) {
+      await setUserInfo(null);
+      return null;
+    }
+
     _userInfo = userInfo;
     return userInfo;
   }

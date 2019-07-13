@@ -1,6 +1,8 @@
-import 'package:omsk_events/resources/providers/shared-pref-token-provider.dart';
+import 'package:omsk_events/resources/providers/user-info-token-provider.dart';
+import 'package:omsk_events/resources/providers/shared-pref-user-info-provider.dart';
 import 'package:omsk_events/resources/providers/simple-vk-sdk-provider.dart';
 import 'package:omsk_events/resources/providers/token-provider.dart';
+import 'package:omsk_events/resources/providers/user-info-provider.dart';
 import 'package:omsk_events/resources/providers/vk-sdk-provider.dart';
 import 'package:omsk_events/resources/repositories/abstract/album-repository.dart';
 import 'package:omsk_events/resources/repositories/abstract/comment-repository.dart';
@@ -20,6 +22,7 @@ class DI {
   static CommentRepository commentRepository = ApiCommentRepository();
   static SettingRepository settingRepository = ApiSettingRepository();
 
-  static TokenProvider tokenProvider = SharedPreferenceTokenProvider();
+  static TokenProvider tokenProvider = UserInfoTokenProvider();
+  static UserInfoProvider userInfoProvider = SharedPreferenceUserInfoProvider();
   static VkSdkProvider vkSdkProvider = SimpleVkSdkProvider();
 }

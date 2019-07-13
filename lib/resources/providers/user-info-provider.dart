@@ -1,12 +1,13 @@
 class UserInfo {
   final int vkId;
+  final String token;
 
-  UserInfo(this.vkId);
+  UserInfo(this.vkId, this.token);
 
   UserInfo.fromJson(Map<String, dynamic> parsedJson)
-      : vkId = parsedJson["vkId"];
+      : vkId = parsedJson["vkId"], token = parsedJson["token"];
 
-  dynamic toJson() => {'vkId': vkId};
+  dynamic toJson() => {'vkId': vkId, 'token': token};
 }
 
 abstract class UserInfoProvider {
