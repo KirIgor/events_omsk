@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:omsk_events/model/event-short.dart';
 
 class TimetableItem extends StatelessWidget {

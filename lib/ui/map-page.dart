@@ -41,11 +41,65 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   List<EventShort> _events;
   List<Setting> _settings;
 
+  EventShort _prev = EventShort(id: -1, startDateTime: DateTime.now());
+  EventShort _selected = EventShort(id: -1, startDateTime: DateTime.now());
+
+  AnimationController _controller;
+  Animation<Offset> _animationOut;
+  Animation<Offset> _animationIn;
+
   @override
   void initState() {
     super.initState();
 
     _eventBloc = BlocWidget.of(context);
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
+
+    _animationOut = Tween<Offset>(begin: Offset.zero, end: Offset(0.0, 1.0))
+        .animate(CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(
+              0.0,
+              0.5,
+              curve: Curves.easeOut,
+            )));
+    _animationIn =
+        Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero)
+            .animate(CurvedAnimation(
+                parent: _controller,
+                curve: const Interval(
+                  0.5,
+                  1,
+                  curve: Curves.easeIn,
+                )));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget _buildEventTile(EventShort e, Animation a) {
+    return SlideTransition(
+      position: a,
+      child: Container(
+          color: Colors.white,
+          child: ListTile(
+            enabled: true,
+            onTap: () => _onShowDetails(e),
+            leading: Icon(Icons.description),
+            title: Text(
+              e.name ?? "",
+              style: TextStyle(
+                  fontWeight: e.isBig != null && e.isBig ? FontWeight.bold : FontWeight.normal),
+            ),
+            subtitle: Text(
+                DateFormat("d MMMM y H:mm", "ru_RU").format(e.startDateTime)),
+            trailing: Icon(Icons.navigate_next),
+          )),
+    );
   }
 
   Widget _buildMap() {
@@ -59,7 +113,11 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
           },
           rotateGesturesEnabled: false,
           initialCameraPosition:
-              CameraPosition(target: omskCameraPosition, zoom: initZoom))
+              CameraPosition(target: omskCameraPosition, zoom: initZoom)),
+      Opacity(
+          opacity: _prev.id == -1 ? 0 : 1,
+          child: _buildEventTile(_prev, _animationOut)),
+      _buildEventTile(_selected, _animationIn)
     ]));
   }
 
@@ -70,6 +128,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
             title: Text("Карта"),
             actions: <Widget>[
               IconButton(
+                tooltip: "Цветовое кодирование",
                 icon: Icon(Icons.not_listed_location),
                 onPressed: () {
                   _showHelp(_settings);
@@ -149,8 +208,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   }
 
   _getIcon(List<Setting> settings, EventShort e) {
-    final bigIcon =
-        BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta);
     final withinSpecialDatesIcon =
         BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta);
     final futureIcon =
@@ -166,16 +223,17 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     final specialDate3Icon =
         BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
 
-    if (e.isBig) return bigIcon;
-
     final now = DateTime.now();
 
     if (e.endDateTime != null) {
+      if (e.endDateTime.isBefore(now)) return pastIcon;
       if (_isWithinSpecialDates(e, settings)) return withinSpecialDatesIcon;
       if (e.startDateTime.isBefore(now) && e.endDateTime.isAfter(now)) {
         return currentIcon;
       }
     } else {
+      if (e.startDateTime.isBefore(now)) return pastIcon;
+
       final specialDate1 = DateTime.parse(settings
           .firstWhere((setting) => setting.key == "SPECIAL_DATE_1")
           .value);
@@ -194,11 +252,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         return specialDate3Icon;
       if (_dateWithoutTimeEquals(e.startDateTime, now)) return currentIcon;
     }
-
-    if (e.startDateTime.isAfter(now))
-      return futureIcon;
-    else
-      return pastIcon;
+    return futureIcon;
   }
 
   Future<void> _updateMarkers(double zoom, LatLngBounds cityBounds,
@@ -231,14 +285,15 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
             : true)
         .map((e) => Marker(
             markerId: MarkerId(e.id.toString()),
-            zIndex: e.isBig ? 101 : 100,
-            alpha: _isWithinSpecialDates(e, settings) && !e.isBig ? 0.6 : 1.0,
-            infoWindow: InfoWindow(
-                title: e.name,
-                snippet: e.eventTimeBounds(),
-                onTap: () {
-                  _onShowDetails(e);
-                }),
+            zIndex: 100,
+            onTap: () {
+              setState(() {
+                _prev = _selected;
+                _selected = e;
+              });
+              _controller.reset();
+              _controller.forward();
+            },
             position: LatLng(e.latitude, e.longitude),
             icon: _getIcon(settings, e)))
         .toSet();
@@ -287,11 +342,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
             ListTile(
               leading: Icon(Icons.location_on,
                   color: Color.fromARGB(255, 255, 0, 255)),
-              title: Text("Крупные события"),
-            ),
-            ListTile(
-              leading: Icon(Icons.location_on,
-                  color: Color.fromARGB((0.6 * 255).round(), 255, 0, 255)),
               title: Text(
                   "Попадают на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
             ),
