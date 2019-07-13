@@ -9,7 +9,7 @@ import 'package:omsk_events/model/event-short.dart';
 
 import 'dart:async';
 
-const initZoom = 11.0;
+const initZoom = 11.5;
 const dZoomToChangeMarkers = 1.0;
 const gridCountXInView = 5;
 const gridCountYInView = 10;
@@ -99,8 +99,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                       ? FontWeight.bold
                       : FontWeight.normal),
             ),
-            subtitle: Text(
-                DateFormat("d MMMM y H:mm", "ru_RU").format(e.startDateTime)),
+            subtitle: Text(e.eventTimeBounds()),
             trailing: Icon(Icons.navigate_next),
           )),
     );
