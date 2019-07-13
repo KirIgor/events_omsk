@@ -59,8 +59,8 @@ class EventItem extends StatelessWidget {
         currentMillis;
   }
 
-  Widget buildTitle(){
-    if (_event.isBig){
+  Widget buildTitle() {
+    if (_event.isBig) {
       return Text(_event.name,
           style: TextStyle(
               fontSize: 20,
@@ -69,9 +69,7 @@ class EventItem extends StatelessWidget {
     }
 
     return Text(_event.name,
-          style: TextStyle(
-              fontSize: 20,
-              color: Colors.black87));
+        style: TextStyle(fontSize: 20, color: Colors.black87));
   }
 
   Widget getBody(BuildContext context) {
@@ -105,7 +103,7 @@ class EventItem extends StatelessWidget {
                                       minRadius: 8,
                                       maxRadius: 8)),
                               Expanded(
-                                  child: buildTitle(),
+                                child: buildTitle(),
                               )
                             ]),
                             Container(
