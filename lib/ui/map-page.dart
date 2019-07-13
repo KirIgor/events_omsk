@@ -174,25 +174,27 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                 )));
   }
 
-  bool _dateWithoutTimeEquals(DateTime date1, DateTime date2) {
-    if (date1 == null) return date2 == null;
-    if (date2 == null) return date1 == null;
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
+  DateTime _dateWithoutTime(DateTime dateTime) =>
+      dateTime == null ? null : DateTime(dateTime.year, dateTime.month, dateTime.day);
 
-  bool _isWithinSpecialDates(EventShort e, List<Setting> settings) {
+  bool _isMultidayAndWithinSpecialDates(EventShort e, List<Setting> settings) {
     if (e.endDateTime == null) return false;
+
+    final startDate = _dateWithoutTime(e.startDateTime);
+    final endDate = _dateWithoutTime(e.endDateTime);
+
+    if (startDate == endDate)
+      return false;
 
     final specialDates = settings
         .where((setting) => setting.key.startsWith("SPECIAL_DATE"))
         .toList();
 
     return specialDates.any((setting) {
-      final specialDate = DateTime.parse(setting.value);
-      return (e.startDateTime.isBefore(specialDate) &&
-          e.endDateTime.isAfter(specialDate));
+      final specialDate = _dateWithoutTime(DateTime.parse(setting.value));
+      return (startDate.millisecondsSinceEpoch <=
+              specialDate.millisecondsSinceEpoch &&
+          endDate.millisecondsSinceEpoch >= specialDate.millisecondsSinceEpoch);
     });
   }
 
@@ -214,32 +216,40 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
 
     final now = DateTime.now();
 
+    final startDate = _dateWithoutTime(e.startDateTime);
+    final endDate = _dateWithoutTime(e.endDateTime);
+
+    final specialDate1 = _dateWithoutTime(DateTime.parse(settings
+        .firstWhere((setting) => setting.key == "SPECIAL_DATE_1")
+        .value));
+    final specialDate2 = _dateWithoutTime(DateTime.parse(settings
+        .firstWhere((setting) => setting.key == "SPECIAL_DATE_2")
+        .value));
+    final specialDate3 = _dateWithoutTime(DateTime.parse(settings
+        .firstWhere((setting) => setting.key == "SPECIAL_DATE_3")
+        .value));
+
     if (e.endDateTime != null) {
       if (e.endDateTime.isBefore(now)) return pastIcon;
-      if (_isWithinSpecialDates(e, settings)) return withinSpecialDatesIcon;
+      if (_isMultidayAndWithinSpecialDates(e, settings))
+        return withinSpecialDatesIcon;
+      if(startDate == endDate) {
+        if(startDate == specialDate1) return specialDate1Icon;
+        else if(startDate == specialDate2) return specialDate2Icon;
+        else if(startDate == specialDate3) return specialDate3Icon;
+      }
       if (e.startDateTime.isBefore(now) && e.endDateTime.isAfter(now)) {
         return currentIcon;
       }
     } else {
       if (e.startDateTime.isBefore(now)) return pastIcon;
 
-      final specialDate1 = DateTime.parse(settings
-          .firstWhere((setting) => setting.key == "SPECIAL_DATE_1")
-          .value);
-      final specialDate2 = DateTime.parse(settings
-          .firstWhere((setting) => setting.key == "SPECIAL_DATE_2")
-          .value);
-      final specialDate3 = DateTime.parse(settings
-          .firstWhere((setting) => setting.key == "SPECIAL_DATE_3")
-          .value);
-
-      if (_dateWithoutTimeEquals(e.startDateTime, specialDate1))
+      if (startDate == specialDate1)
         return specialDate1Icon;
-      else if (_dateWithoutTimeEquals(e.startDateTime, specialDate2))
+      else if (startDate == specialDate2)
         return specialDate2Icon;
-      else if (_dateWithoutTimeEquals(e.startDateTime, specialDate3))
-        return specialDate3Icon;
-      if (_dateWithoutTimeEquals(e.startDateTime, now)) return currentIcon;
+      else if (startDate == specialDate3) return specialDate3Icon;
+      if (startDate == _dateWithoutTime(now)) return currentIcon;
     }
     return futureIcon;
   }

@@ -56,7 +56,7 @@ class EventFull {
         this.startDateTime.month == this.endDateTime.month &&
         this.startDateTime.day == this.endDateTime.day) {
       return "${DateFormat("d MMMM H:mm", "ru_RU").format(this.startDateTime)} "
-          "- ${DateFormat("Hm", "ru_RU").format(this.endDateTime)}";
+          "${DateFormat("Hm", "ru_RU").format(this.endDateTime)}";
     } else {
       return "${DateFormat("d MMMM H:mm", "ru_RU").format(this.startDateTime)} "
           "- ${DateFormat("d MMMM H:mm", "ru_RU").format(this.endDateTime)}";

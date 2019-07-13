@@ -8,6 +8,20 @@ class SharedPreferenceUserInfoProvider implements UserInfoProvider {
 
   static UserInfo _userInfo;
 
+  String _padBase64(String base64) {
+    switch (base64.length % 4) {
+      case 0:
+        return base64;
+      case 1:
+        return base64 + "===";
+      case 2:
+        return base64 + "==";
+      case 3:
+        return base64 + "=";
+      default: throw Exception("WTF");
+    }
+  }
+
   @override
   Future<UserInfo> getUserInfo() async {
     if (_userInfo != null) return _userInfo;
@@ -21,8 +35,8 @@ class SharedPreferenceUserInfoProvider implements UserInfoProvider {
     if (userInfo == null || userInfo.token == null) return null;
 
     final expiresIn = DateTime.fromMillisecondsSinceEpoch(json.decode(
-            String.fromCharCodes(
-                base64Decode(userInfo.token.split(".")[1])))["exp"] *
+            String.fromCharCodes(base64Decode(
+                _padBase64(userInfo.token.split(".")[1]))))["exp"] *
         1000);
     if (expiresIn.isBefore(DateTime.now())) return null;
 
