@@ -24,10 +24,7 @@ class SharedPreferenceUserInfoProvider implements UserInfoProvider {
             String.fromCharCodes(
                 base64Decode(userInfo.token.split(".")[1])))["exp"] *
         1000);
-    if (expiresIn.isBefore(DateTime.now())) {
-      await setUserInfo(null);
-      return null;
-    }
+    if (expiresIn.isBefore(DateTime.now())) return null;
 
     _userInfo = userInfo;
     return userInfo;
