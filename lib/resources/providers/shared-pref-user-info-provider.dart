@@ -1,12 +1,16 @@
 import 'dart:convert';
 
+import 'package:http/http.dart';
 import 'package:omsk_events/resources/providers/user-info-provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SharedPreferenceUserInfoProvider implements UserInfoProvider {
+import 'api-prodiver.dart';
+
+class SharedPreferenceUserInfoProvider extends APIProvider  implements UserInfoProvider{
   static const String USER_INFO = "user_info";
 
   static UserInfo _userInfo;
+  final _client = Client();
 
   String _padBase64(String base64) {
     switch (base64.length % 4) {
@@ -49,5 +53,15 @@ class SharedPreferenceUserInfoProvider implements UserInfoProvider {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(USER_INFO, json.encode(info));
     _userInfo = info;
+  }
+
+  @override
+  Future<bool> isBanned() async {
+    final response = await _client.get("$baseURL/users/");
+
+    if (response.statusCode == 200) {
+
+    } else
+      throw Exception(response.body);
   }
 }

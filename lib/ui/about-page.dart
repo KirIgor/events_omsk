@@ -69,6 +69,7 @@ class AboutPage extends StatelessWidget {
   void _share() {
     const appUrl = "<Здесь будет ссылка>";
 
+    //TODO(Change app url)
     Share.plainText(
         title: "Карта праздничных мероприятий Омска",
         text: "Скачайте приложение с $appUrl и будьте в курсе всех праздничных мероприятий в гооде")

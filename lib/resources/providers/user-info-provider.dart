@@ -13,4 +13,5 @@ class UserInfo {
 abstract class UserInfoProvider {
   Future<void> setUserInfo(UserInfo info);
   Future<UserInfo> getUserInfo();
+  Future<bool> isBanned();
 }

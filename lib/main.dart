@@ -13,6 +13,7 @@ import 'package:omsk_events/bloc/timetable-bloc.dart';
 import 'package:omsk_events/bloc/user-bloc.dart';
 import 'package:omsk_events/di.dart';
 import 'package:omsk_events/ui/about-us-page.dart';
+import 'package:omsk_events/ui/splash-page.dart';
 
 import 'ui/event-list-page.dart';
 import 'ui/map-page.dart';
@@ -50,6 +51,8 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   int _currentSelected = 0;
+
+  bool _isSplashTime = true;
 
   @override
   void initState() {
@@ -119,8 +122,35 @@ class _AppState extends State<App> {
     return Theme.of(context).primaryColor;
   }
 
+  Widget getScaffold(){
+    return Scaffold(
+        body: getBody(),
+        bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _currentSelected,
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.list), title: Text("События")),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.map), title: Text("Карта")),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.schedule), title: Text("Расписание")),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.settings), title: Text("Настройки"))
+            ],
+            onTap: _onSelectItem,
+            selectedItemColor: Theme.of(context).primaryColor,
+            unselectedItemColor: Colors.grey));
+  }
+
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 1, milliseconds: 500)).then((v) {
+      if (_isSplashTime)
+      setState(() {
+        _isSplashTime = false;
+      });
+    });
+
     return MaterialApp(
         onGenerateRoute: _onGenerateRoute,
         theme: ThemeData(
@@ -130,32 +160,12 @@ class _AppState extends State<App> {
           brightness: Brightness.light,
           primarySwatch: Colors.blue,
         ),
-        home: Scaffold(
-            body: getBody(),
-            bottomNavigationBar: BottomNavigationBar(
-                currentIndex: _currentSelected,
-                items: <BottomNavigationBarItem>[
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.list), title: Text("События")),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.map), title: Text("Карта")),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.schedule), title: Text("Расписание")),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.settings), title: Text("Настройки"))
-                ],
-                onTap: _onSelectItem,
-                selectedItemColor: Theme.of(context).primaryColor,
-                unselectedItemColor: Colors.grey)));
+        home: _isSplashTime ? SplashPage() : getScaffold()
+    );
   }
 
   Route _onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case "/all_events":
-        return MaterialPageRoute(
-            builder: (context) => BlocWidget(
-                bloc: EventListBloc(eventRepository: DI.eventRepository),
-                child: EventListPage()));
       case "/event_details":
         {
           int id = settings.arguments as int;
