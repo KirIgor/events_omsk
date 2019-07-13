@@ -16,6 +16,8 @@ class TimetableListPageState extends State<TimetableListPage> {
   TimetableBloc _timetableBloc;
   UserBloc _userBloc;
 
+  bool _filterPast = true;
+
   @override
   void initState() {
     super.initState();
@@ -31,7 +33,30 @@ class TimetableListPageState extends State<TimetableListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Расписание"), backgroundColor: Colors.white),
+      appBar: AppBar(
+        title: Text("Расписание"),
+        backgroundColor: Colors.white,
+        actions: <Widget>[
+          PopupMenuButton(
+              tooltip: "Фильтрация",
+              icon: Icon(Icons.filter_list),
+              itemBuilder: (context) => [
+                    CheckedPopupMenuItem(
+                      child: Text("Убрать прошедшие"),
+                      value: "filterPast",
+                      checked: _filterPast,
+                    )
+                  ],
+              onSelected: (value) {
+                if (value == "filterPast") {
+                  _timetableBloc.changeFilterPast(!_filterPast);
+                  setState(() {
+                    _filterPast = !_filterPast;
+                  });
+                }
+              }),
+        ],
+      ),
       body: RefreshIndicator(
           child: StreamBuilder(
               stream: _timetableBloc.timetable,

@@ -12,16 +12,30 @@ class TimetableBloc extends BlocBase {
   final TimetableRepository _timetableRepository;
   final EventRepository _eventRepository;
   final _timetableFetcher = PublishSubject<List<EventShort>>();
+
   Observable<List<EventShort>> get timetable => _timetableFetcher.stream;
   List<EventShort> _currentTimetable;
 
-  TimetableBloc({@required TimetableRepository timetableRepository, @required EventRepository eventRepository})
-      : _timetableRepository = timetableRepository, _eventRepository = eventRepository;
+  TimetableBloc(
+      {@required TimetableRepository timetableRepository,
+      @required EventRepository eventRepository})
+      : _timetableRepository = timetableRepository,
+        _eventRepository = eventRepository;
+
+  bool _filterPast = true;
 
   Future<void> loadTimetable() {
     return _timetableRepository.fetchTimetable().then((timetable) {
       _currentTimetable = timetable;
-      _timetableFetcher.add(timetable);
+      if (_filterPast)
+        _timetableFetcher.add(timetable
+            .where((event) =>
+                (event.endDateTime ?? event.startDateTime)
+                    .isAfter(DateTime.now()) !=
+                false)
+            .toList());
+      else
+        _timetableFetcher.add(timetable);
     });
   }
 
@@ -40,5 +54,10 @@ class TimetableBloc extends BlocBase {
   void dispose() {
     super.dispose();
     _timetableFetcher.close();
+  }
+
+  void changeFilterPast(bool filterPast) {
+    _filterPast = filterPast;
+    loadTimetable();
   }
 }
