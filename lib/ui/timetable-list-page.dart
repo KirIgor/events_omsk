@@ -63,25 +63,35 @@ class TimetableListPageState extends State<TimetableListPage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<EventShort> timetable = snapshot.data;
-                  return ListView.separated(
-                    separatorBuilder: (context, position) => Divider(),
-                    itemBuilder: (context, position) => Dismissible(
-                          key: Key(timetable[position].id.toString()),
-                          child: TimetableItem(event: timetable[position]),
-                          direction: DismissDirection.endToStart,
-                          onDismissed: (dir) => _timetableBloc
-                              .removeFromTimetable(timetable[position].id),
-                          background: Container(
-                            color: Colors.red,
-                            child: Container(
-                              child: Icon(Icons.delete, color: Colors.white),
-                              margin: EdgeInsets.only(right: 32),
+                  if (timetable.isNotEmpty)
+                    return ListView.separated(
+                      separatorBuilder: (context, position) => Divider(),
+                      itemBuilder: (context, position) => Dismissible(
+                            key: Key(timetable[position].id.toString()),
+                            child: TimetableItem(event: timetable[position]),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (dir) => _timetableBloc
+                                .removeFromTimetable(timetable[position].id),
+                            background: Container(
+                              color: Colors.red,
+                              child: Container(
+                                child: Icon(Icons.delete, color: Colors.white),
+                                margin: EdgeInsets.only(right: 32),
+                              ),
+                              alignment: Alignment.centerRight,
                             ),
-                            alignment: Alignment.centerRight,
                           ),
-                        ),
-                    itemCount: timetable.length,
-                  );
+                      itemCount: timetable.length,
+                    );
+                  return Center(
+                      child: Container(
+                          height: 100,
+                          child: Column(children: <Widget>[
+                            Icon(Icons.event_busy,
+                                size: 64, color: Colors.black45),
+                            Text("Вы ничего не добавили в расписание",
+                                style: TextStyle(color: Colors.black45, fontSize: 16))
+                          ])));
                 } else {
                   return Center(
                     child: CircularProgressIndicator(),

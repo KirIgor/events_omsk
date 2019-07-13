@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:omsk_events/bloc/gallery-bloc.dart';
 import 'package:omsk_events/di.dart';
 import 'package:omsk_events/model/album-short.dart';
+import 'package:omsk_events/model/album.dart';
 import 'package:omsk_events/model/photo.dart';
 
 import 'package:photo_view/photo_view.dart';
@@ -32,6 +33,7 @@ class GalleryPage extends StatefulWidget {
 
 class GalleryPageState extends State<GalleryPage> {
   List<Widget> _buildChildren(List<AlbumShort> albums) {
+    albums.sort((a, b) => a.id.compareTo(b.id));
     return albums.map((a) => GalleryAlbumItem(album: a)).toList();
   }
 
@@ -147,29 +149,30 @@ class GalleryPhotosPageState extends State<GalleryPhotosPage> {
     return Theme(
         data: ThemeData(),
         child: Stack(children: <Widget>[
-          Scaffold(
-            appBar: AppBar(title: Text(widget.album.name)),
-            body: StreamBuilder(
+          StreamBuilder(
               stream: widget._galleryBloc.fullAlbum,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final List<Photo> photos = snapshot.data.photos;
-
-                  return Stack(children: <Widget>[
-                    GridView.count(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 4.0,
-                      crossAxisSpacing: 4.0,
-                      padding: const EdgeInsets.all(4.0),
-                      children: _buildChildren(photos),
-                    )
-                  ]);
-                } else {
-                  return Center(child: CircularProgressIndicator());
+                  final Album album = snapshot.data;
+                  final List<Photo> photos = album.photos;
+                  return Scaffold(
+                      appBar: AppBar(title: Text(album.year), actions: <Widget>[
+                        IconButton(
+                            icon: Icon(Icons.description),
+                            onPressed: () => _showAlbumInfo(context, album))
+                      ]),
+                      body: Stack(children: <Widget>[
+                        GridView.count(
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 4.0,
+                          crossAxisSpacing: 4.0,
+                          padding: const EdgeInsets.all(4.0),
+                          children: _buildChildren(photos),
+                        )
+                      ]));
                 }
-              },
-            ),
-          )
+                return Center(child: CircularProgressIndicator());
+              })
         ]));
   }
 
@@ -180,6 +183,38 @@ class GalleryPhotosPageState extends State<GalleryPhotosPage> {
                 builder: (context) =>
                     GalleryDetailsPage(images: photos, initialIndex: index)));
       };
+
+  void _showAlbumInfo(BuildContext context, Album album) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => ConstrainedBox(
+            constraints: BoxConstraints(minHeight: 300),
+            child: Container(
+                padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Text(album.name, style: TextStyle(fontSize: 20)),
+                    Container(
+                        child: Row(children: <Widget>[
+                          Icon(Icons.photo_camera, color: Colors.black54),
+                          Expanded(
+                              child: Container(
+                                  child: Text(album.author,
+                                      style: TextStyle(color: Colors.black54)),
+                                  margin: EdgeInsets.only(left: 8)))
+                        ]),
+                        margin: EdgeInsets.only(top: 8)),
+                    Divider(color: Colors.grey),
+                    Container(
+                        child: Text(
+                          album.description,
+                          style: TextStyle(color: Colors.black45),
+                        ),
+                        margin: EdgeInsets.only(top: 8)),
+                  ],
+                ))));
+  }
 }
 
 class GalleryPhotosItem extends StatelessWidget {
@@ -275,7 +310,8 @@ class GalleryDetailsPageState extends State<GalleryDetailsPage> {
           initialScale: PhotoViewComputedScale.contained,
           minScale: PhotoViewComputedScale.contained,
           maxScale: PhotoViewComputedScale.covered * 1.3,
-          heroTag: _currentIndex == index ? widget.images[index].id : "invalid tag"),
+          heroTag:
+              _currentIndex == index ? widget.images[index].id : "invalid tag"),
       itemCount: widget.images.length,
     );
   }

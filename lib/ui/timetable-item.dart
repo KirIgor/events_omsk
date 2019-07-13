@@ -38,12 +38,13 @@ class TimetableItem extends StatelessWidget {
             subtitle: Container(
               child: Row(children: <Widget>[
                 Icon(Icons.date_range, color: Colors.black45, size: 16.0),
-                Container(
+                Expanded(child: Container(
                     margin: EdgeInsets.only(left: 4),
                     child: Text(
                       _event.eventTimeBounds(),
                       style: TextStyle(color: Colors.black45),
-                    )),
+                    ))
+                ),
               ]),
               margin: EdgeInsets.only(top: 4),
             ),

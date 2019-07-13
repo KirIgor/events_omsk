@@ -26,16 +26,18 @@ class TimetableBloc extends BlocBase {
 
   Future<void> loadTimetable() {
     return _timetableRepository.fetchTimetable().then((timetable) {
-      _currentTimetable = timetable;
-      if (_filterPast)
-        _timetableFetcher.add(timetable
+      if (_filterPast) {
+        _currentTimetable = timetable
             .where((event) =>
                 (event.endDateTime ?? event.startDateTime)
                     .isAfter(DateTime.now()) !=
                 false)
-            .toList());
-      else
+            .toList();
+
+        _timetableFetcher.add(_currentTimetable);
+      } else {
         _timetableFetcher.add(timetable);
+      }
     });
   }
 

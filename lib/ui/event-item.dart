@@ -113,9 +113,7 @@ class EventItem extends StatelessWidget {
                                       color: Colors.black45, size: 16.0),
                                   Container(
                                       margin: EdgeInsets.only(left: 4),
-                                      child: Text(
-                                          DateFormat("dd.MM.yyyy, H:mm")
-                                              .format(_event.startDateTime),
+                                      child: Text(_event.eventTimeBounds(),
                                           style:
                                               TextStyle(color: Colors.black45)))
                                 ]))

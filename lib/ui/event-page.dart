@@ -42,7 +42,7 @@ class EventPage extends StatefulWidget {
 
   EventPage({Key key, @required this.eventId}) : super(key: key);
 
-  final double _topBarHeight = 200;
+  double _topBarHeight;
 
   @override
   State<StatefulWidget> createState() => _EventPageState(eventId);
@@ -139,15 +139,15 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
             images: photosWithMainImage.map((src) => NetworkImage(src)).toList()));
   }
 
-  Widget _buildFloatingActionButton(EventFull event) {
+  Widget _buildFloatingActionButton(EventFull event, BuildContext context) {
     return Positioned(
-        top: 195.0 - _offset,
+        top: widget._topBarHeight - 4.0 - _offset,
         right: 16.0,
         child: Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()..scale(_scaleFromOffset(_offset)),
           child: FloatingActionButton(
-            onPressed: () => onLikeOrDislike(event),
+            onPressed: () => onLikeOrDislike(event, context),
             child: Icon(event.liked ? Icons.person : Icons.person_outline),
           ),
         ));
@@ -160,7 +160,9 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
             (_event.endDateTime?.millisecondsSinceEpoch ?? currentMillis));
   }
 
-  Widget getBody(EventFull event, UserInfo userInfo) {
+  Widget getBody(EventFull event, UserInfo userInfo, BuildContext context) {
+    widget._topBarHeight = event.mainPhoto == null || event.mainPhoto.isEmpty ? 100 : 200;
+
     return Stack(
       children: <Widget>[
         CustomScrollView(
@@ -194,7 +196,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                 commentFadeAnimation: _commentFadeAnimation)
           ],
         ),
-        _buildFloatingActionButton(event)
+        _buildFloatingActionButton(event, context)
       ],
     );
   }
@@ -216,7 +218,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                               ConnectionState.active) {
                         UserInfo userInfo = userSnapshot.data;
                         EventFull event = eventSnapshot.data;
-                        return getBody(event, userInfo);
+                        return getBody(event, userInfo, context);
                       } else {
                         return Center(child: CircularProgressIndicator());
                       }
@@ -250,12 +252,20 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
         .share();
   }
 
-  void onLikeOrDislike(EventFull event) async {
+  void onLikeOrDislike(EventFull event, BuildContext context) async {
     try {
-      if (event.liked)
+      String message;
+
+      if (event.liked) {
         await _eventDetailsBloc.dislikeEvent(event);
-      else
+        message = "Вы убрали событие из расписания";
+      } else {
         await _eventDetailsBloc.likeEvent(event);
+        message = "Вы добавили событие в расписание";
+      }
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text(message))
+      );
     } on NotAuthorizedException {
       Navigator.pushNamed(context, "/auth");
     }

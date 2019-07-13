@@ -147,7 +147,7 @@ class _EventListState extends State<EventListPage> {
                                       child: Text("По дате"),
                                       value: EventOrderBy.startDateTime),
                                   PopupMenuItem(
-                                      child: Text("По количеству лайков"),
+                                      child: Text("По количеству посетителей"),
                                       value: EventOrderBy.likesCount)
                                 ],
                             onSelected: (value) {
