@@ -21,7 +21,7 @@ class EventListBloc extends BlocBase {
       : _eventRepository = eventRepository,
         _settingRepository = settingRepository;
 
-  bool _isBig = false;
+  bool _isBig;
   EventOrderBy _orderBy = EventOrderBy.startDateTime;
   String _query;
   EventOrderType _orderType = EventOrderType.ASC;
