@@ -11,8 +11,8 @@ class SettingAPIProvider extends APIProvider {
   Future<List<Setting>> fetchSettings(
       {int page = 0,
         int pageSize = 10,
-        OrderBy orderBy = OrderBy.id,
-        OrderType orderType = OrderType.ASC
+        SettingsOrderBy orderBy = SettingsOrderBy.id,
+        SettingsOrderType orderType = SettingsOrderType.ASC
       }) async {
     final orderByText = orderBy.toString().split(".")[1];
     final orderTypeText = orderType.toString().split(".")[1];

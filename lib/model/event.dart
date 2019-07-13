@@ -89,6 +89,6 @@ class EventFull {
   }
 }
 
-enum OrderBy { likesCount, startDateTime }
+enum EventOrderBy { likesCount, startDateTime }
 
-enum OrderType { ASC, DESC }
+enum EventOrderType { ASC, DESC }

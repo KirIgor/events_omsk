@@ -11,6 +11,7 @@ class EventShort {
   int _likesCount;
   String _mainImage;
   bool _isBig;
+  int _commentsCount;
 
   EventShort({int id, DateTime startDateTime})
       : _id = id,
@@ -30,6 +31,7 @@ class EventShort {
     _likesCount = parsedJson["likesCount"];
     _mainImage = parsedJson["mainImage"];
     _isBig = parsedJson["big"];
+    _commentsCount = parsedJson["commentsCount"];
   }
 
   String eventTimeBounds() {
@@ -46,6 +48,7 @@ class EventShort {
   int get likesCount => _likesCount;
   String get mainImage => _mainImage;
   bool get isBig => _isBig;
+  int get commentsCount => _commentsCount;
 
   bool isOnGoing() {
     if (endDateTime == null) return false;

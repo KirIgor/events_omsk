@@ -9,6 +9,8 @@ import 'package:omsk_events/model/event-short.dart';
 
 import 'dart:async';
 
+import 'package:omsk_events/ui/utils.dart';
+
 const initZoom = 11.0;
 const dZoomToChangeMarkers = 1.0;
 const gridCountXInView = 5;
@@ -174,30 +176,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                 )));
   }
 
-  DateTime _dateWithoutTime(DateTime dateTime) =>
-      dateTime == null ? null : DateTime(dateTime.year, dateTime.month, dateTime.day);
-
-  bool _isMultidayAndWithinSpecialDates(EventShort e, List<Setting> settings) {
-    if (e.endDateTime == null) return false;
-
-    final startDate = _dateWithoutTime(e.startDateTime);
-    final endDate = _dateWithoutTime(e.endDateTime);
-
-    if (startDate == endDate)
-      return false;
-
-    final specialDates = settings
-        .where((setting) => setting.key.startsWith("SPECIAL_DATE"))
-        .toList();
-
-    return specialDates.any((setting) {
-      final specialDate = _dateWithoutTime(DateTime.parse(setting.value));
-      return (startDate.millisecondsSinceEpoch <=
-              specialDate.millisecondsSinceEpoch &&
-          endDate.millisecondsSinceEpoch >= specialDate.millisecondsSinceEpoch);
-    });
-  }
-
   _getIcon(List<Setting> settings, EventShort e) {
     final withinSpecialDatesIcon =
         BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta);
@@ -216,22 +194,22 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
 
     final now = DateTime.now();
 
-    final startDate = _dateWithoutTime(e.startDateTime);
-    final endDate = _dateWithoutTime(e.endDateTime);
+    final startDate = dateWithoutTime(e.startDateTime);
+    final endDate = dateWithoutTime(e.endDateTime);
 
-    final specialDate1 = _dateWithoutTime(DateTime.parse(settings
+    final specialDate1 = dateWithoutTime(DateTime.parse(settings
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_1")
         .value));
-    final specialDate2 = _dateWithoutTime(DateTime.parse(settings
+    final specialDate2 = dateWithoutTime(DateTime.parse(settings
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_2")
         .value));
-    final specialDate3 = _dateWithoutTime(DateTime.parse(settings
+    final specialDate3 = dateWithoutTime(DateTime.parse(settings
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_3")
         .value));
 
     if (e.endDateTime != null) {
       if (e.endDateTime.isBefore(now)) return pastIcon;
-      if (_isMultidayAndWithinSpecialDates(e, settings))
+      if (isMultidayAndWithinSpecialDates(e, settings))
         return withinSpecialDatesIcon;
       if(startDate == endDate) {
         if(startDate == specialDate1) return specialDate1Icon;
@@ -249,7 +227,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
       else if (startDate == specialDate2)
         return specialDate2Icon;
       else if (startDate == specialDate3) return specialDate3Icon;
-      if (startDate == _dateWithoutTime(now)) return currentIcon;
+      if (startDate == dateWithoutTime(now)) return currentIcon;
     }
     return futureIcon;
   }

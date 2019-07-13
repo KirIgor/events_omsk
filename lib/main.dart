@@ -93,7 +93,7 @@ class _AppState extends State<App> {
     switch (_currentSelected) {
       case 0:
         return BlocWidget(
-            bloc: EventListBloc(eventRepository: DI.eventRepository),
+            bloc: EventListBloc(eventRepository: DI.eventRepository, settingRepository: DI.settingRepository),
             child: EventListPage());
       case 1:
         return BlocWidget(

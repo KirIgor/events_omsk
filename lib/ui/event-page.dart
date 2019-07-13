@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:omsk_events/ui/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import 'package:share/share.dart';
@@ -124,6 +125,9 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
         ? '${event.name.substring(0, 17)}...'
         : event.name;
 
+    final photosWithMainImage = event.photos.map((photo) => photo.src).toList();
+    photosWithMainImage.add(event.mainPhoto);
+
     return FlexibleSpaceBar(
         title:
             Opacity(opacity: _opacityFromOffset(_offset), child: Text(title)),
@@ -132,8 +136,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
             dotIncreaseSize: 1.3,
             autoplayDuration: const Duration(seconds: 5),
             boxFit: BoxFit.fitWidth,
-            images:
-                event.photos.map((photo) => NetworkImage(photo.src)).toList()));
+            images: photosWithMainImage.map((src) => NetworkImage(src)).toList()));
   }
 
   Widget _buildFloatingActionButton(EventFull event) {
@@ -275,14 +278,13 @@ class EventPageInfo extends StatelessWidget {
   Widget buildTitle() {
     if (event.isBig)
       return ListTile(
-        leading: Icon(Icons.stars, size: 30),
         title: Text(event.name,
             style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w500)),
       );
 
     return ListTile(
       title: Text(event.name,
-          style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w500)),
+          style: const TextStyle(fontSize: 25)),
     );
   }
 
@@ -298,7 +300,7 @@ class EventPageInfo extends StatelessWidget {
               title: Text(event.eventTimeBounds(),
                   style: const TextStyle(fontStyle: FontStyle.italic)),
               trailing: const Icon(
-                Icons.event_note,
+                Icons.event_available,
                 size: 30,
               ),
               onTap: () => addToCalendar(event)),

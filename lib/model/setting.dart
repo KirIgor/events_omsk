@@ -14,6 +14,6 @@ class Setting {
   String get value => _value;
 }
 
-enum OrderBy { id, key, value }
+enum SettingsOrderBy { id, key, value }
 
-enum OrderType { ASC, DESC }
+enum SettingsOrderType { ASC, DESC }
