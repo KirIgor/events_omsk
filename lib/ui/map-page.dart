@@ -13,7 +13,7 @@ const initZoom = 11.5;
 const dZoomToChangeMarkers = 1.0;
 const gridCountXInView = 5;
 const gridCountYInView = 10;
-const omskCameraPosition = LatLng(54.972764, 73.3336552);
+const omskCameraPosition = LatLng(54.982764, 73.3536552);
 
 enum MarkerType {
   MULTIDAY_WITHIN_SPECIAL_DATES,
