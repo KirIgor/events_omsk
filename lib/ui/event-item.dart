@@ -65,13 +65,13 @@ class EventItem extends StatelessWidget {
           style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.black87);
+              color: Colors.black87));
     }
 
     return Text(_event.name,
           style: TextStyle(
               fontSize: 20,
-              color: Colors.black87);
+              color: Colors.black87));
   }
 
   Widget getBody(BuildContext context) {
