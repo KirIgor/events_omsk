@@ -14,12 +14,6 @@ const dZoomToChangeMarkers = 1.0;
 const gridCountXInView = 5;
 const gridCountYInView = 10;
 const omskCameraPosition = LatLng(54.972764, 73.3336552);
-// there was bug with infinite loop in init state,
-// because onMapCreated doesn't guarantee that getVisibleRegion will
-// not return ((0,0), (0,0)), so initialVisibleRegion is hardcoded now
-final initialVisibleRegion = LatLngBounds(
-    southwest: LatLng(54.8381112099642, 73.19882277399302),
-    northeast: LatLng(55.10696676234333, 73.46848703920841));
 
 class MapPage extends StatefulWidget {
   MapPage({Key key}) : super(key: key);
@@ -31,13 +25,11 @@ class MapPage extends StatefulWidget {
 class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   bool _filterPast = true;
 
-  GoogleMapController _mapController;
   Set<Marker> _markers = Set();
   double _zoom = initZoom;
 
   EventMapBloc _eventBloc;
 
-  LatLngBounds _cityBounds;
   List<EventShort> _events;
   List<Setting> _settings;
 
@@ -93,7 +85,9 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
             title: Text(
               e.name ?? "",
               style: TextStyle(
-                  fontWeight: e.isBig != null && e.isBig ? FontWeight.bold : FontWeight.normal),
+                  fontWeight: e.isBig != null && e.isBig
+                      ? FontWeight.bold
+                      : FontWeight.normal),
             ),
             subtitle: Text(
                 DateFormat("d MMMM y H:mm", "ru_RU").format(e.startDateTime)),
@@ -108,8 +102,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
       GoogleMap(
           markers: _markers,
           onMapCreated: (controller) {
-            _mapController = controller;
-            _updateMarkers(_zoom, _cityBounds, _settings, _events);
+            _updateMarkers(_zoom, _settings, _events);
           },
           rotateGesturesEnabled: false,
           initialCameraPosition:
@@ -138,16 +131,16 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                 tooltip: "Фильтрация",
                 icon: Icon(Icons.filter_list),
                 itemBuilder: (context) => [
-                      CheckedPopupMenuItem(
-                        child: Text("Убрать прошедшие"),
-                        value: "removePast",
-                        checked: _filterPast,
-                      )
-                    ],
+                  CheckedPopupMenuItem(
+                    child: Text("Убрать прошедшие"),
+                    value: "removePast",
+                    checked: _filterPast,
+                  )
+                ],
                 onSelected: (value) async {
                   if (value == "removePast") {
                     _filterPast = !_filterPast;
-                    _updateMarkers(_zoom, _cityBounds, _settings, _events);
+                    _updateMarkers(_zoom, _settings, _events);
                   }
                 },
               )
@@ -165,11 +158,9 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                             ConnectionState.active) {
                       final events = eventsSnapshot.data;
                       final settings = settingsSnapshot.data;
-                      final LatLngBounds cityBounds = _calcCityBounds(events);
 
                       _events = events;
                       _settings = settings;
-                      _cityBounds = cityBounds;
 
                       return _buildMap();
                     } else if (eventsSnapshot.hasError ||
@@ -255,18 +246,8 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     return futureIcon;
   }
 
-  Future<void> _updateMarkers(double zoom, LatLngBounds cityBounds,
-      List<Setting> settings, List<EventShort> events) async {
-    print(events);
-    final GoogleMapController controller = _mapController;
-    LatLngBounds visibleRegion = controller == null
-        ? initialVisibleRegion
-        : await controller.getVisibleRegion();
-    if (visibleRegion.southwest.latitude == 0.0 &&
-        visibleRegion.southwest.longitude == 0.0 &&
-        visibleRegion.northeast.latitude == 0.0 &&
-        visibleRegion.northeast.longitude == 0.0)
-      visibleRegion = initialVisibleRegion;
+  Future<void> _updateMarkers(
+      double zoom, List<Setting> settings, List<EventShort> events) async {
     final markers = _getAllMarkersFromEvents(settings, events);
 
     setState(() {
@@ -297,26 +278,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
             position: LatLng(e.latitude, e.longitude),
             icon: _getIcon(settings, e)))
         .toSet();
-  }
-
-  LatLngBounds _calcCityBounds(List<EventShort> events) {
-    double minX = double.infinity;
-    double maxX = 0;
-    double minY = double.infinity;
-    double maxY = 0;
-
-    events.forEach((e) {
-      LatLng pos = LatLng(e.latitude, e.longitude);
-
-      if (pos.latitude < minY) minY = pos.latitude;
-      if (pos.latitude > maxY) maxY = pos.latitude;
-      if (pos.longitude < minX) minX = pos.longitude;
-      if (pos.longitude > maxX) maxX = pos.longitude;
-    });
-
-    return LatLngBounds(
-        northeast: LatLng(maxY + 0.001, maxX + 0.001),
-        southwest: LatLng(minY - 0.001, minX - 0.001));
   }
 
   void _showHelp(List<Setting> settings) {
