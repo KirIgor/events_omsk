@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        //  appBar: AppBar(
-        //  title: new Text('О приложении'),
-        // ),
-        //    backgroundColor:Color(0xffb5ffff),
+        appBar: AppBar(
+          title:
+              new Text('О приложении', style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+        ),
         body: SizedBox.expand(
-            child: new Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
+            child: new Column(children: <Widget>[
           new Container(
             padding: const EdgeInsets.all(52.0),
             child: new Column(children: <Widget>[
@@ -50,30 +50,30 @@ class AboutPage extends StatelessWidget {
             ]),
             alignment: FractionalOffset.topCenter,
           ),
-          new Container(
-              padding: const EdgeInsets.only(bottom: 48.0),
-              child: SizedBox(
-                height: 50,
-                child: FlatButton(
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  disabledColor: Colors.grey,
-                  disabledTextColor: Colors.black,
-                  // padding: EdgeInsets.all(8.0),
-                  splashColor: Color(0xff49a7cc), //0xff80d8ff
-                  onPressed: () {
-                    //to do
-                  },
-                  child: Text(
-                    "Оценить приложение",
-                    style: TextStyle(fontSize: 20.0),
-                  ),
-                ),
-              ),
-              alignment: FractionalOffset.bottomCenter)
+          Divider(),
+          ListTile(
+              leading: Icon(Icons.star), title: Text("Оценить приложение"), onTap: () => rateApp()),
+          ListTile(
+              leading: Icon(Icons.info),
+              title: Text("Политика конфиденциальности"), onTap: () =>_privacyPolicy()),
+          ListTile(
+              leading: Icon(Icons.share), title: Text("Поделиться приложением"), onTap: () => _share())
         ]) //Column
             ) //cont
 
         ); //scaffold
   }
+
+  void _privacyPolicy() {}
+
+  void _share() {
+    const appUrl = "<Здесь будет ссылка>";
+
+    Share.plainText(
+        title: "Карта праздничных мероприятий Омска",
+        text: "Скачайте приложение с $appUrl и будьте в курсе всех праздничных мероприятий в гооде")
+        .share();
+  }
+
+  void rateApp() {}
 }

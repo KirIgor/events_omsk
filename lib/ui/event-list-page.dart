@@ -49,7 +49,7 @@ class _EventListState extends State<EventListPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        const radius = 12.0;
+        const radius = 8.0;
 
         return SimpleDialog(
           title: Text("Цветовое кодирование"),

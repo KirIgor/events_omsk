@@ -12,6 +12,7 @@ import 'package:omsk_events/bloc/event-map-bloc.dart';
 import 'package:omsk_events/bloc/timetable-bloc.dart';
 import 'package:omsk_events/bloc/user-bloc.dart';
 import 'package:omsk_events/di.dart';
+import 'package:omsk_events/ui/about-us-page.dart';
 
 import 'ui/event-list-page.dart';
 import 'ui/map-page.dart';
@@ -178,6 +179,8 @@ class _AppState extends State<App> {
         return MaterialPageRoute(
             builder: (context) =>
                 BlocWidget(bloc: UserBloc(), child: VkAuthPage()));
+      case "/about_us":
+        return MaterialPageRoute(builder: (context) => AboutUsPage());
     }
     throw Exception("Invalid page");
   }
