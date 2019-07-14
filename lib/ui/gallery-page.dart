@@ -33,7 +33,6 @@ class GalleryPage extends StatefulWidget {
 
 class GalleryPageState extends State<GalleryPage> {
   List<Widget> _buildChildren(List<AlbumShort> albums) {
-    albums.sort((a, b) => a.id.compareTo(b.id));
     return albums.map((a) => GalleryAlbumItem(album: a)).toList();
   }
 

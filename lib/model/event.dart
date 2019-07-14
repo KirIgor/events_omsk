@@ -1,6 +1,6 @@
-import 'package:intl/intl.dart';
-
 import 'package:omsk_events/model/photo.dart';
+import 'package:omsk_events/model/event-short.dart';
+import 'package:omsk_events/model/setting.dart';
 
 class EventFull {
   int _id;
@@ -48,18 +48,12 @@ class EventFull {
     _isBig = parsedJson["isBig"];
   }
 
-  String eventTimeBounds() {
-    if (this.endDateTime == null)
-      return "${DateFormat("d MMMM H:mm", "ru_RU").format(this.startDateTime)}";
+  bool isMultidayAndWithinSpecialDates(List<Setting> settings) =>
+      EventShort.fromEventFull(this).isMultidayAndWithinSpecialDates(settings);
 
-    if (this.startDateTime.year == this.endDateTime.year &&
-        this.startDateTime.month == this.endDateTime.month &&
-        this.startDateTime.day == this.endDateTime.day) {
-      return "${DateFormat("d MMMM H:mm", "ru_RU").format(this.startDateTime)}–${DateFormat("Hm", "ru_RU").format(this.endDateTime)}";
-    } else {
-      return "${DateFormat("d MMMM H:mm", "ru_RU").format(this.startDateTime)} — ${DateFormat("d MMMM H:mm", "ru_RU").format(this.endDateTime)}";
-    }
-  }
+  EventType getEventType(List<Setting> settings) => EventShort.fromEventFull(this).getEventType(settings);
+
+  bool isOnGoing() => EventShort.fromEventFull(this).isOnGoing();
 
   int get id => _id;
   String get name => _name;
@@ -77,14 +71,6 @@ class EventFull {
   String get mainPhoto => _mainImage;
 
   bool get isBig => _isBig;
-
-  bool isOnGoing() {
-    if (endDateTime == null) return false;
-
-    final currentMillis = DateTime.now().millisecondsSinceEpoch;
-    return (startDateTime.millisecondsSinceEpoch <= currentMillis &&
-        currentMillis <= endDateTime.millisecondsSinceEpoch);
-  }
 }
 
 enum EventOrderBy { likesCount, startDateTime }
