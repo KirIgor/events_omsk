@@ -134,12 +134,10 @@ class EventShort {
 
     final startDate = _dateWithoutTime(startDateTime);
 
-    if (startDate != nowDate) return false;
-
     if (endDateTime != null) {
-      return endDateTime.millisecondsSinceEpoch >= now.millisecondsSinceEpoch;
+      return startDate.millisecondsSinceEpoch <= nowDate.millisecondsSinceEpoch && endDateTime.millisecondsSinceEpoch >= now.millisecondsSinceEpoch;
     } else {
-      return startDateTime.millisecondsSinceEpoch >= now.millisecondsSinceEpoch;
+      return startDate == nowDate && startDateTime.millisecondsSinceEpoch >= now.millisecondsSinceEpoch;
     }
   }
 
