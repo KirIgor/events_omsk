@@ -224,7 +224,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
       final eventType = e.getEventType(settings);
       return Marker(
           markerId: MarkerId(e.id.toString()),
-          zIndex: _getZIndex(e, eventType),
           infoWindow: InfoWindow(
               title: (e.isBig ? /*fire emoji*/ "🔥" : "") +
                   e.eventTimeBounds() +
