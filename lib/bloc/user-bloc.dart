@@ -6,7 +6,6 @@ import 'package:rxdart/rxdart.dart';
 import 'bloc-base.dart';
 
 class UserBloc extends BlocBase {
-  final _tokenProvider = DI.tokenProvider;
   final _userInfoProvider = DI.userInfoProvider;
   final _loginProvider = LoginAPIProvider();
 
@@ -19,14 +18,13 @@ class UserBloc extends BlocBase {
 
     UserInfo info = UserInfo(vkId, token);
 
-    await _userInfoProvider.setUserInfo(info);
+    _userInfoProvider.setUserInfo(info);
 
     _userInfoSubject.sink.add(info);
   }
 
   Future<void> logOut() async {
-    await _tokenProvider.setToken(null);
-    await _userInfoProvider.setUserInfo(null);
+    _userInfoProvider.setUserInfo(null);
 
     _userInfoSubject.sink.add(null);
   }

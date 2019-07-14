@@ -52,12 +52,17 @@ class AboutPage extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-              leading: Icon(Icons.star), title: Text("Оценить приложение"), onTap: () => rateApp()),
+              leading: Icon(Icons.star),
+              title: Text("Оценить приложение"),
+              onTap: () => rateApp()),
           ListTile(
               leading: Icon(Icons.info),
-              title: Text("Политика конфиденциальности"), onTap: () =>_privacyPolicy()),
+              title: Text("Политика конфиденциальности"),
+              onTap: () => _privacyPolicy()),
           ListTile(
-              leading: Icon(Icons.share), title: Text("Поделиться приложением"), onTap: () => _share())
+              leading: Icon(Icons.share),
+              title: Text("Поделиться приложением"),
+              onTap: () => _share())
         ]) //Column
             ) //cont
 
@@ -71,8 +76,9 @@ class AboutPage extends StatelessWidget {
 
     //TODO(Change app url)
     Share.plainText(
-        title: "Карта праздничных мероприятий Омска",
-        text: "Скачайте приложение с $appUrl и будьте в курсе всех праздничных мероприятий в гооде")
+            title: "Карта праздничных мероприятий Омска",
+            text:
+                "Скачайте приложение с $appUrl и будьте в курсе всех праздничных мероприятий в гооде")
         .share();
   }
 
