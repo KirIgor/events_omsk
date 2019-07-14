@@ -48,6 +48,8 @@ class EventFull {
     _isBig = parsedJson["isBig"];
   }
 
+  String eventTimeBounds() => EventShort.fromEventFull(this).eventTimeBounds();
+
   bool isMultidayAndWithinSpecialDates(List<Setting> settings) =>
       EventShort.fromEventFull(this).isMultidayAndWithinSpecialDates(settings);
 

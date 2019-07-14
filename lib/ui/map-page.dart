@@ -15,16 +15,6 @@ const gridCountXInView = 5;
 const gridCountYInView = 10;
 const omskCameraPosition = LatLng(54.982764, 73.3536552);
 
-enum MarkerType {
-  MULTIDAY_WITHIN_SPECIAL_DATES,
-  SPECIAL_DATE_1,
-  SPECIAL_DATE_2,
-  SPECIAL_DATE_3,
-  CURRENT,
-  FUTURE,
-  PAST
-}
-
 class MapPage extends StatefulWidget {
   MapPage({Key key}) : super(key: key);
 
@@ -183,98 +173,31 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                 )));
   }
 
-  DateTime _dateWithoutTime(DateTime dateTime) => dateTime == null
-      ? null
-      : DateTime(dateTime.year, dateTime.month, dateTime.day);
-
-  bool _isMultidayAndWithinSpecialDates(EventShort e, List<Setting> settings) {
-    if (e.endDateTime == null) return false;
-
-    final startDate = _dateWithoutTime(e.startDateTime);
-    final endDate = _dateWithoutTime(e.endDateTime);
-
-    if (startDate == endDate) return false;
-
-    final specialDates = settings
-        .where((setting) => setting.key.startsWith("SPECIAL_DATE"))
-        .toList();
-
-    return specialDates.any((setting) {
-      final specialDate = _dateWithoutTime(DateTime.parse(setting.value));
-      return (startDate.millisecondsSinceEpoch <=
-              specialDate.millisecondsSinceEpoch &&
-          endDate.millisecondsSinceEpoch >= specialDate.millisecondsSinceEpoch);
-    });
-  }
-
-  double _getZIndex(MarkerType type, EventShort e) {
+  double _getZIndex(EventShort e, EventType type) {
     double res =
-        (MarkerType.values.length - MarkerType.values.indexOf(type)).toDouble();
-    if (e.isBig && type != MarkerType.PAST) res += MarkerType.values.length;
+        (EventType.values.length - EventType.values.indexOf(type)).toDouble();
+    if (e.isBig && type != EventType.PAST) res += EventType.values.length;
     return res;
   }
 
-  MarkerType _getMarkerType(List<Setting> settings, EventShort e) {
-    final now = DateTime.now();
-
-    final startDate = _dateWithoutTime(e.startDateTime);
-    final endDate = _dateWithoutTime(e.endDateTime);
-
-    final specialDate1 = _dateWithoutTime(DateTime.parse(settings
-        .firstWhere((setting) => setting.key == "SPECIAL_DATE_1")
-        .value));
-    final specialDate2 = _dateWithoutTime(DateTime.parse(settings
-        .firstWhere((setting) => setting.key == "SPECIAL_DATE_2")
-        .value));
-    final specialDate3 = _dateWithoutTime(DateTime.parse(settings
-        .firstWhere((setting) => setting.key == "SPECIAL_DATE_3")
-        .value));
-
-    if (e.endDateTime != null) {
-      if (e.endDateTime.isBefore(now)) return MarkerType.PAST;
-      if (_isMultidayAndWithinSpecialDates(e, settings))
-        return MarkerType.MULTIDAY_WITHIN_SPECIAL_DATES;
-      if (startDate == endDate) {
-        if (startDate == specialDate1)
-          return MarkerType.SPECIAL_DATE_1;
-        else if (startDate == specialDate2)
-          return MarkerType.SPECIAL_DATE_2;
-        else if (startDate == specialDate3) return MarkerType.SPECIAL_DATE_3;
-      }
-      if (e.startDateTime.isBefore(now) && e.endDateTime.isAfter(now)) {
-        return MarkerType.CURRENT;
-      }
-    } else {
-      if (e.startDateTime.isBefore(now)) return MarkerType.PAST;
-
-      if (startDate == specialDate1)
-        return MarkerType.SPECIAL_DATE_1;
-      else if (startDate == specialDate2)
-        return MarkerType.SPECIAL_DATE_2;
-      else if (startDate == specialDate3) return MarkerType.SPECIAL_DATE_3;
-      if (startDate == _dateWithoutTime(now)) return MarkerType.CURRENT;
-    }
-    return MarkerType.FUTURE;
-  }
-
-  _getIcon(MarkerType markerType) {
-    switch (markerType) {
-      case MarkerType.MULTIDAY_WITHIN_SPECIAL_DATES:
+  _getIcon(EventType eventType) {
+    switch (eventType) {
+      case EventType.CURRENT:
+        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+      case EventType.MULTIDAY_WITHIN_SPECIAL_DATES:
         return BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueMagenta);
-      case MarkerType.SPECIAL_DATE_1:
+      case EventType.SPECIAL_DATE_1:
         return BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueOrange);
-      case MarkerType.SPECIAL_DATE_2:
+      case EventType.SPECIAL_DATE_2:
         return BitmapDescriptor.defaultMarkerWithHue(21); //dark orange
-      case MarkerType.SPECIAL_DATE_3:
+      case EventType.SPECIAL_DATE_3:
         return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
-      case MarkerType.CURRENT:
-        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
-      case MarkerType.FUTURE:
+      case EventType.FUTURE:
         return BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueYellow);
-      case MarkerType.PAST:
+      case EventType.PAST:
         return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
     }
   }
@@ -298,10 +221,10 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                 : e.startDateTime.isAfter(now)
             : true)
         .map((e) {
-      final markerType = _getMarkerType(settings, e);
+      final eventType = e.getEventType(settings);
       return Marker(
           markerId: MarkerId(e.id.toString()),
-          zIndex: _getZIndex(markerType, e),
+          zIndex: _getZIndex(e, eventType),
           onTap: () {
             setState(() {
               _prev = _selected;
@@ -311,7 +234,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
             _controller.forward();
           },
           position: LatLng(e.latitude, e.longitude),
-          icon: _getIcon(markerType));
+          icon: _getIcon(eventType));
     }).toSet();
   }
 
