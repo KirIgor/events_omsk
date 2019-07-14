@@ -18,27 +18,35 @@ class AboutUsPage extends StatelessWidget {
               ListTile(
                   leading: CircleAvatar(
                       backgroundImage: AssetImage("assets/igor.png")),
-                  title: Text("Кирьянов Игорь"),
+                  title: Text("Игорь Кирьянов"),
                   onTap: () => _openIgor(),
                   subtitle: Text("ОмГУ, 3 курс")),
               ListTile(
                   leading: CircleAvatar(
                       backgroundImage: AssetImage("assets/daniil.png")),
-                  title: Text("Бугай Даниил"),
+                  title: Text("Даниил Бугай"),
                   onTap: () => _openDaniil(),
                   subtitle: Text("ОмГУ, 3 курс")),
               ListTile(
                   leading: CircleAvatar(
                       backgroundImage: AssetImage("assets/tanya.png")),
-                  title: Text("Олейникова Татьяна"),
+                  title: Text("Татьяна Олейникова"),
                   onTap: () => _openTanya(),
                   subtitle: Text("ОмГУ, 3 курс")),
+              Divider(),
+              Container(
+                margin: EdgeInsets.only(top: 8, left: 12, right: 12),
+                child: Text(
+                    "Создано в рамках проекта \"Мобилаториум\". Разработку курировала омская IT-компания Effective, "
+                    "Которая специализируется на разработке мобильных приложений для Retail, Telecom и B2G",
+                    style: TextStyle(color: Colors.black54)),
+              ),
               ListTile(
                   leading: CircleAvatar(
                       backgroundImage: AssetImage("assets/effective.png")),
                   title: Text("Компания Effective"),
                   onTap: () => _openEffective(),
-                  subtitle: Text("<О Effective>"))
+                  subtitle: Text("effective.band"))
             ],
           ),
         ));
@@ -59,7 +67,5 @@ class AboutUsPage extends StatelessWidget {
     launch(url);
   }
 
-  void _openIgor() async {
-
-  }
+  void _openIgor() async {}
 }

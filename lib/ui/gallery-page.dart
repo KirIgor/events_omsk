@@ -99,7 +99,7 @@ class GalleryAlbumItem extends StatelessWidget {
                 placeholder: placeholder,
               )),
           footer: GridTileBar(
-              backgroundColor: Colors.black45, subtitle: Text(album.name)),
+              backgroundColor: Colors.black45, subtitle: Text(album.year)),
         ));
   }
 }

@@ -126,7 +126,12 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
         : event.name;
 
     final photosWithMainImage = event.photos.map((photo) => photo.src).toList();
-    photosWithMainImage.add(event.mainPhoto);
+    if (event.mainPhoto != null && event.mainPhoto.isNotEmpty)
+      photosWithMainImage.add(event.mainPhoto);
+
+    final resultImages = photosWithMainImage.isEmpty
+        ? [AssetImage("assets/omsk.png")]
+        : photosWithMainImage.map((src) => NetworkImage(src)).toList();
 
     return FlexibleSpaceBar(
         title:
@@ -136,7 +141,8 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
             dotIncreaseSize: 1.3,
             autoplayDuration: const Duration(seconds: 5),
             boxFit: BoxFit.fitWidth,
-            images: photosWithMainImage.map((src) => NetworkImage(src)).toList()));
+            images: resultImages
+        ));
   }
 
   Widget _buildFloatingActionButton(EventFull event, BuildContext context) {
@@ -389,7 +395,7 @@ class EventPageToAlbumAndVK extends StatelessWidget {
         event.hasAlbums
             ? ListTile(
                 leading: Icon(Icons.photo_album, color: color, size: 30),
-                title: const Text("Все фотографии"),
+                title: const Text("Фотоальбомы события"),
                 onTap: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (BuildContext context) {

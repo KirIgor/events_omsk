@@ -41,31 +41,8 @@ class TransparentRoute extends PageRoute<void> {
   }
 }
 
-DateTime dateWithoutTime(DateTime dateTime) =>
-    dateTime == null ? null : DateTime(dateTime.year, dateTime.month, dateTime.day);
-
-bool isMultidayAndWithinSpecialDates(EventShort e, List<Setting> settings) {
-  if (e.endDateTime == null) return false;
-
-  final startDate = dateWithoutTime(e.startDateTime);
-  final endDate = dateWithoutTime(e.endDateTime);
-
-  if (startDate == endDate)
-    return false;
-
-  final specialDates = settings
-      .where((setting) => setting.key.startsWith("SPECIAL_DATE"))
-      .toList();
-
-  return specialDates.any((setting) {
-    final specialDate = dateWithoutTime(DateTime.parse(setting.value));
-    return (startDate.millisecondsSinceEpoch <=
-        specialDate.millisecondsSinceEpoch &&
-        endDate.millisecondsSinceEpoch >= specialDate.millisecondsSinceEpoch);
-  });
-}
-
 Color getEventMarkerColor(List<Setting> settings, EventShort event) {
+  final type = event.getEventType(settings);
   final withinSpecialDatesColor = Colors.purple;
   final futureColor = Colors.yellow;
   final currentColor = Colors.green;
@@ -74,44 +51,14 @@ Color getEventMarkerColor(List<Setting> settings, EventShort event) {
   final specialDate2Color = Colors.deepOrangeAccent; //dark orange
   final specialDate3Color = Colors.red;
 
-  final now = DateTime.now();
-
-  final startDate = dateWithoutTime(event.startDateTime);
-  final endDate = dateWithoutTime(event.endDateTime);
-
-  final specialDate1 = dateWithoutTime(DateTime.parse(settings
-      .firstWhere((setting) => setting.key == "SPECIAL_DATE_1")
-      .value));
-  final specialDate2 = dateWithoutTime(DateTime.parse(settings
-      .firstWhere((setting) => setting.key == "SPECIAL_DATE_2")
-      .value));
-  final specialDate3 = dateWithoutTime(DateTime.parse(settings
-      .firstWhere((setting) => setting.key == "SPECIAL_DATE_3")
-      .value));
-
-  if (event.endDateTime != null) {
-    if (event.endDateTime.isBefore(now)) return pastColor;
-    if (isMultidayAndWithinSpecialDates(event, settings))
-      return withinSpecialDatesColor;
-    if (startDate == endDate) {
-      if (startDate == specialDate1)
-        return specialDate1Color;
-      else if (startDate == specialDate2)
-        return specialDate2Color;
-      else if (startDate == specialDate3) return specialDate3Color;
-    }
-    if (event.startDateTime.isBefore(now) && event.endDateTime.isAfter(now)) {
-      return currentColor;
-    }
-  } else {
-    if (event.startDateTime.isBefore(now)) return pastColor;
-
-    if (startDate == specialDate1)
-      return specialDate1Color;
-    else if (startDate == specialDate2)
-      return specialDate2Color;
-    else if (startDate == specialDate3) return specialDate3Color;
-    if (startDate == dateWithoutTime(now)) return currentColor;
+  switch(type){
+    case EventType.CURRENT: return currentColor;
+    case EventType.FUTURE: return futureColor;
+    case EventType.MULTIDAY_WITHIN_SPECIAL_DATES: return withinSpecialDatesColor;
+    case EventType.PAST: return pastColor;
+    case EventType.SPECIAL_DATE_1: return specialDate1Color;
+    case EventType.SPECIAL_DATE_2: return specialDate2Color;
+    case EventType.SPECIAL_DATE_3: return specialDate3Color;
+    default: throw Exception("Invalid event type");
   }
-  return futureColor;
 }

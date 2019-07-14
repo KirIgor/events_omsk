@@ -34,7 +34,7 @@ class TimetableListPageState extends State<TimetableListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Расписание"),
+        title: Text("Избранное"),
         backgroundColor: Colors.white,
         actions: <Widget>[
           PopupMenuButton(
@@ -85,12 +85,16 @@ class TimetableListPageState extends State<TimetableListPage> {
                     );
                   return Center(
                       child: Container(
-                          height: 100,
+                          height: 130,
                           child: Column(children: <Widget>[
                             Icon(Icons.event_busy,
                                 size: 64, color: Colors.black45),
-                            Text("Вы ничего не добавили в расписание",
-                                style: TextStyle(color: Colors.black45, fontSize: 16))
+                            Text(
+                              "Вы можете собрать на этой странице самые интересные события, чтобы ничего не пропустить!",
+                              style: TextStyle(
+                                  color: Colors.black45, fontSize: 16),
+                              textAlign: TextAlign.center,
+                            )
                           ])));
                 } else {
                   return Center(

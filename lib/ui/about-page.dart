@@ -7,7 +7,7 @@ class AboutPage extends StatelessWidget {
     return new Scaffold(
         appBar: AppBar(
           title:
-              new Text('О приложении', style: TextStyle(color: Colors.black)),
+              new Text("О приложении", style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
         ),
         body: SizedBox.expand(
@@ -31,14 +31,14 @@ class AboutPage extends StatelessWidget {
                     ),
                     child: Image(
                       fit: BoxFit.fill,
-                      image: AssetImage('assets/logo.png'),
+                      image: AssetImage("assets/logo.png"),
                     ) //image
                     ), //container im
               ), //cliprr
               new Container(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Карта праздничных мероприятий Омска',
+                  "Омск: город сегодня",
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.w400,
@@ -50,6 +50,15 @@ class AboutPage extends StatelessWidget {
             ]),
             alignment: FractionalOffset.topCenter,
           ),
+          Container(
+              margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                "Приложение информирует о значимых городских мероприятиях - "
+                "в поле зрения редакции попадают события Дня города, Нового года, Масленицы, Дня Победы и другие\n\n"
+                    "Возможные изменения места проведения, времени начала мероприятий оперативно отражаются в приложении. "
+                    "Планируйте собственные праздничные маршруты с удобством и удовольствием",
+                style: TextStyle(color: Colors.black54),
+              )),
           Divider(),
           ListTile(
               leading: Icon(Icons.star),

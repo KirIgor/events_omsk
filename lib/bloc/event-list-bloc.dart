@@ -31,7 +31,7 @@ class EventListBloc extends BlocBase {
   Observable<List<Setting>> get allSettings => _settingsFetcher.stream;
 
   Future<List<EventShort>> fetchNewEvents(int page) async {
-    final startDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
+    final startDate = DateTime.now().toIso8601String();
 
     if (_query == null || _query.isEmpty) {
       return await _eventRepository.fetchEvents(
@@ -39,8 +39,8 @@ class EventListBloc extends BlocBase {
           pageSize: 5,
           orderBy: _orderBy,
           orderType: _orderType,
-          filter: {"fromStartDate": startDate, "isBig": _isBig},
-          followSettings: false);
+          filter: { "isBig": _isBig, "withoutPast": true},
+          );
     }
 
     return await _eventRepository.fetchEvents(
@@ -48,8 +48,8 @@ class EventListBloc extends BlocBase {
         pageSize: 5,
         orderBy: _orderBy,
         orderType: _orderType,
-        filter: {"name": _query, "fromStartDate": startDate, "isBig": _isBig},
-        followSettings: false);
+        filter: {"name": _query, "isBig": _isBig, "withoutPast": true},
+        );
   }
 
   Future<void> refresh() async {

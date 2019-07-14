@@ -21,9 +21,11 @@ class EventItem extends StatelessWidget {
   void _onShareClick(BuildContext context) {
     Share.plainText(
             title: _event.name,
-            text: _event.mainImage ??
-                "" + "\n" + _event.name + "\n" + _event.description ??
-                "")
+            text: (_event.mainImage ?? "") +
+                "\n" +
+                _event.name +
+                "\n" +
+                (_event.description ?? ""))
         .share();
   }
 

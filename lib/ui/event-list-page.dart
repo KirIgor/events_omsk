@@ -147,7 +147,7 @@ class _EventListState extends State<EventListPage> {
                                       child: Text("По дате"),
                                       value: EventOrderBy.startDateTime),
                                   PopupMenuItem(
-                                      child: Text("По количеству посетителей"),
+                                      child: Text("По числу участников"),
                                       value: EventOrderBy.likesCount)
                                 ],
                             onSelected: (value) {
@@ -159,7 +159,7 @@ class _EventListState extends State<EventListPage> {
                           icon: Icon(Icons.filter_list),
                           itemBuilder: (context) => [
                                 CheckedPopupMenuItem(
-                                  child: Text("Только большие"),
+                                  child: Text("Только масштабные"),
                                   value: "big",
                                   checked: isBig,
                                 )

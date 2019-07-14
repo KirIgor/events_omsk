@@ -133,7 +133,7 @@ class _AppState extends State<App> {
               BottomNavigationBarItem(
                   icon: Icon(Icons.map), title: Text("Карта")),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.schedule), title: Text("Расписание")),
+                  icon: Icon(Icons.schedule), title: Text("Избранное")),
               BottomNavigationBarItem(
                   icon: Icon(Icons.settings), title: Text("Настройки"))
             ],
