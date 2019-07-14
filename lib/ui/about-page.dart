@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
   @override
@@ -10,7 +11,7 @@ class AboutPage extends StatelessWidget {
               new Text("О приложении", style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
         ),
-        body: SizedBox.expand(
+        body: SingleChildScrollView(
             child: new Column(children: <Widget>[
           new Container(
             padding: const EdgeInsets.all(52.0),
@@ -52,18 +53,38 @@ class AboutPage extends StatelessWidget {
           ),
           Container(
               margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                "Приложение информирует о значимых городских мероприятиях - "
-                "в поле зрения редакции попадают события Дня города, Нового года, Масленицы, Дня Победы и другие\n\n"
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+                Text(
+                  "Приложение информирует о значимых городских мероприятиях - "
+                  "в поле зрения редакции попадают события Дня города, Нового года, Масленицы, Дня Победы и другие"
+                  "Ленту событий формируют структурные подразделения Администрации города Омска:\n",
+                  style: TextStyle(color: Colors.black54),
+                ),
+                InkWell(
+                    child: Text("-департамент информационной политики",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline)),
+                    onTap: () => _firstLink()),
+                InkWell(
+                    child: Text(
+                      "-управление информационно-коммуникационных технологии\n",
+                      style: TextStyle(
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline),
+                    ),
+                    onTap: () => _secondLink()),
+                Text(
                     "Возможные изменения места проведения, времени начала мероприятий оперативно отражаются в приложении. "
                     "Планируйте собственные праздничные маршруты с удобством и удовольствием",
-                style: TextStyle(color: Colors.black54),
-              )),
+                    style: TextStyle(color: Colors.black54)),
+              ])),
           Divider(),
           ListTile(
               leading: Icon(Icons.star),
               title: Text("Оценить приложение"),
-              onTap: () => rateApp()),
+              onTap: () => _rateApp()),
           ListTile(
               leading: Icon(Icons.info),
               title: Text("Политика конфиденциальности"),
@@ -91,5 +112,16 @@ class AboutPage extends StatelessWidget {
         .share();
   }
 
-  void rateApp() {}
+  void _rateApp() {}
+
+  void _firstLink() {
+    const url = "https://admomsk.ru/web/guest/government/divisions/45/about";
+    launch(url);
+  }
+
+  void _secondLink() {
+    const url =
+        "https://admomsk.ru/web/guest/government/divisions/47/technologies/about";
+    launch(url);
+  }
 }

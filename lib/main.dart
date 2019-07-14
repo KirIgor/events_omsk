@@ -153,6 +153,7 @@ class _AppState extends State<App> {
 
     return MaterialApp(
         onGenerateRoute: _onGenerateRoute,
+        title: "Омск: город сегодня",
         theme: ThemeData(
           primaryColor: Colors.lightBlue,
           primaryColorDark: Colors.blue,
