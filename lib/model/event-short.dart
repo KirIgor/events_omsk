@@ -52,14 +52,14 @@ class EventShort {
 
   String eventTimeBounds() {
     if (endDateTime == null)
-      return "${DateFormat("d MMMM H:mm", "ru_RU").format(startDateTime)}";
+      return "${DateFormat("d MMMM, H:mm", "ru_RU").format(startDateTime)}";
 
     if (startDateTime.year == endDateTime.year &&
         startDateTime.month == endDateTime.month &&
         startDateTime.day == endDateTime.day) {
-      return "${DateFormat("d MMMM H:mm", "ru_RU").format(startDateTime)}–${DateFormat("Hm", "ru_RU").format(endDateTime)}";
+      return "${DateFormat("d MMMM, H:mm", "ru_RU").format(startDateTime)}–${DateFormat("Hm", "ru_RU").format(endDateTime)}";
     } else {
-      return "${DateFormat("d MMMM H:mm", "ru_RU").format(startDateTime)} — ${DateFormat("d MMMM H:mm", "ru_RU").format(endDateTime)}";
+      return "${DateFormat("d MMMM, H:mm", "ru_RU").format(startDateTime)} — ${DateFormat("d MMMM, H:mm", "ru_RU").format(endDateTime)}";
     }
   }
 
@@ -105,7 +105,7 @@ class EventShort {
 
     if (endDateTime != null) {
       if (endDateTime.isBefore(now)) return EventType.PAST;
-      if (isOnGoing()) return EventType.CURRENT;
+      if (isToday()) return EventType.CURRENT;
       if (isMultidayAndWithinSpecialDates(settings))
         return EventType.MULTIDAY_WITHIN_SPECIAL_DATES;
       if (startDate == endDate) {
@@ -117,7 +117,7 @@ class EventShort {
       }
     } else {
       if (startDateTime.isBefore(now)) return EventType.PAST;
-      if (isOnGoing()) return EventType.CURRENT;
+      if (isToday()) return EventType.CURRENT;
 
       if (startDate == specialDate1)
         return EventType.SPECIAL_DATE_1;
@@ -128,17 +128,27 @@ class EventShort {
     return EventType.FUTURE;
   }
 
-  bool isOnGoing() {
+  bool isToday() {
     final now = DateTime.now();
     final nowDate = _dateWithoutTime(now);
 
     final startDate = _dateWithoutTime(startDateTime);
 
     if (endDateTime != null) {
-      return startDate.millisecondsSinceEpoch <= nowDate.millisecondsSinceEpoch && endDateTime.millisecondsSinceEpoch >= now.millisecondsSinceEpoch;
+      return startDate.millisecondsSinceEpoch <=
+              nowDate.millisecondsSinceEpoch &&
+          endDateTime.millisecondsSinceEpoch >= now.millisecondsSinceEpoch;
     } else {
-      return startDate == nowDate && startDateTime.millisecondsSinceEpoch >= now.millisecondsSinceEpoch;
+      return startDate == nowDate &&
+          startDateTime.millisecondsSinceEpoch >= now.millisecondsSinceEpoch;
     }
+  }
+
+  bool isOnGoing() {
+    if (endDateTime == null) return false;
+
+    final now = DateTime.now();
+    return startDateTime.isBefore(now) && endDateTime.isAfter(now);
   }
 
   int get id => _id;

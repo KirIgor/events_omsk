@@ -27,6 +27,34 @@ class _EventListState extends State<EventListPage> {
 
   final searchStream = PublishSubject<String>();
 
+  @override
+  void initState() {
+    super.initState();
+
+    _bloc = BlocWidget.of<EventListBloc>(context);
+
+    _pagewiseLoadController = PagewiseLoadController<EventShort>(
+        pageFuture: (pageIndex) {
+          return _bloc.fetchNewEvents(pageIndex);
+        },
+        pageSize: 5);
+
+    _searchController = SearchBarController(
+      onClearQuery: () {
+        setSearchQuery("");
+        _searchController.clearQuery();
+      },
+      onCancelSearch: () {
+        setSearchQuery("");
+        _searchController.cancelSearch();
+      },
+    );
+
+    searchStream.stream.debounce(Duration(milliseconds: 800)).listen((query) {
+      setSearchQuery(query);
+    });
+  }
+
   void setSearchQuery(String query) {
     _bloc.setSearchQuery(query);
     _pagewiseLoadController.reset();
@@ -55,28 +83,34 @@ class _EventListState extends State<EventListPage> {
           title: Text("Цветовое кодирование"),
           children: <Widget>[
             ListTile(
-              leading: CircleAvatar(backgroundColor: Colors.purple, radius: radius),
+              leading:
+                  CircleAvatar(backgroundColor: Colors.purple, radius: radius),
               title: Text(
                   "Длящиеся несколько дней и выпадающие на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
             ),
             ListTile(
-              leading: CircleAvatar(backgroundColor: Colors.orange, radius: radius),
+              leading:
+                  CircleAvatar(backgroundColor: Colors.orange, radius: radius),
               title: Text(specialDateFormat.format(specialDate1)),
             ),
             ListTile(
-              leading: CircleAvatar(backgroundColor: Colors.deepOrangeAccent, radius: radius),
+              leading: CircleAvatar(
+                  backgroundColor: Colors.deepOrangeAccent, radius: radius),
               title: Text(specialDateFormat.format(specialDate2)),
             ),
             ListTile(
-              leading: CircleAvatar(backgroundColor: Colors.red, radius: radius),
+              leading:
+                  CircleAvatar(backgroundColor: Colors.red, radius: radius),
               title: Text(specialDateFormat.format(specialDate3)),
             ),
             ListTile(
-              leading: CircleAvatar(backgroundColor: Colors.green, radius: radius),
+              leading:
+                  CircleAvatar(backgroundColor: Colors.green, radius: radius),
               title: Text("Сегодня"),
             ),
             ListTile(
-              leading: CircleAvatar(backgroundColor: Colors.yellow, radius: radius),
+              leading:
+                  CircleAvatar(backgroundColor: Colors.yellow, radius: radius),
               title: Text("В другие дни"),
             ),
           ],
@@ -92,33 +126,10 @@ class _EventListState extends State<EventListPage> {
 
   @override
   Widget build(BuildContext context) {
-    _bloc = BlocWidget.of<EventListBloc>(context);
-
-    _pagewiseLoadController = PagewiseLoadController<EventShort>(
-        pageFuture: (pageIndex) {
-          return _bloc.fetchNewEvents(pageIndex);
-        },
-        pageSize: 5);
-
     final pagewiseList = PagewiseListView<EventShort>(
         pageLoadController: _pagewiseLoadController,
         itemBuilder: (context, event, index) =>
             buildEventItem(event, _settings));
-
-    _searchController = SearchBarController(
-      onClearQuery: () {
-        setSearchQuery("");
-        _searchController.clearQuery();
-      },
-      onCancelSearch: () {
-        setSearchQuery("");
-        _searchController.cancelSearch();
-      },
-    );
-
-    searchStream.stream.debounce(Duration(milliseconds: 800)).listen((query) {
-      setSearchQuery(query);
-    });
 
     return StreamBuilder(
         stream: _bloc.allSettings,
@@ -158,12 +169,12 @@ class _EventListState extends State<EventListPage> {
                           tooltip: "Фильтрация",
                           icon: Icon(Icons.filter_list),
                           itemBuilder: (context) => [
-                                CheckedPopupMenuItem(
-                                  child: Text("Только масштабные"),
-                                  value: "big",
-                                  checked: isBig,
-                                )
-                              ],
+                            CheckedPopupMenuItem(
+                              child: Text("Только масштабные"),
+                              value: "big",
+                              checked: isBig,
+                            )
+                          ],
                           onSelected: (value) {
                             if (value == "big") {
                               _bloc.changeBigFilter(!isBig);
@@ -177,7 +188,8 @@ class _EventListState extends State<EventListPage> {
                       ],
                     )),
                 body: pagewiseList);
-          } else return Center(child: CircularProgressIndicator());
+          } else
+            return Center(child: CircularProgressIndicator());
         });
   }
 

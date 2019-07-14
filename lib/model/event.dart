@@ -55,6 +55,7 @@ class EventFull {
 
   EventType getEventType(List<Setting> settings) => EventShort.fromEventFull(this).getEventType(settings);
 
+  bool isToday() => EventShort.fromEventFull(this).isToday();
   bool isOnGoing() => EventShort.fromEventFull(this).isOnGoing();
 
   int get id => _id;

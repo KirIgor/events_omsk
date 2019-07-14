@@ -31,25 +31,29 @@ class EventListBloc extends BlocBase {
   Observable<List<Setting>> get allSettings => _settingsFetcher.stream;
 
   Future<List<EventShort>> fetchNewEvents(int page) async {
-    final startDate = DateTime.now().toIso8601String();
+    print("fetching $page");
 
     if (_query == null || _query.isEmpty) {
-      return await _eventRepository.fetchEvents(
-          page: page,
-          pageSize: 5,
-          orderBy: _orderBy,
-          orderType: _orderType,
-          filter: { "isBig": _isBig, "withoutPast": true},
-          );
-    }
-
-    return await _eventRepository.fetchEvents(
+      final res = await _eventRepository.fetchEvents(
         page: page,
         pageSize: 5,
         orderBy: _orderBy,
         orderType: _orderType,
-        filter: {"name": _query, "isBig": _isBig, "withoutPast": true},
-        );
+        filter: {"isBig": _isBig, "withoutPast": true},
+      );
+      print(res.map((e) => e.id));
+      return res;
+    }
+
+    final res = await _eventRepository.fetchEvents(
+      page: page,
+      pageSize: 5,
+      orderBy: _orderBy,
+      orderType: _orderType,
+      filter: {"name": _query, "isBig": _isBig, "withoutPast": true},
+    );
+    print(res.map((e) => e.id));
+    return res;
   }
 
   Future<void> refresh() async {

@@ -225,6 +225,8 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
       return Marker(
           markerId: MarkerId(e.id.toString()),
           zIndex: _getZIndex(e, eventType),
+          infoWindow:
+              InfoWindow(title: e.isBig ? "Крупное событие" : "Событие"),
           onTap: () {
             setState(() {
               _prev = _selected;

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:omsk_events/ui/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import 'package:share/share.dart';
@@ -159,13 +158,6 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
         ));
   }
 
-  bool isOnGoing(_event) {
-    final currentMillis = DateTime.now().millisecondsSinceEpoch;
-    return (_event.startDateTime.millisecondsSinceEpoch <= currentMillis &&
-        currentMillis <=
-            (_event.endDateTime?.millisecondsSinceEpoch ?? currentMillis));
-  }
-
   Widget getBody(EventFull event, UserInfo userInfo, BuildContext context) {
     widget._topBarHeight = event.mainPhoto == null || event.mainPhoto.isEmpty ? 100 : 200;
 
@@ -264,10 +256,10 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
 
       if (event.liked) {
         await _eventDetailsBloc.dislikeEvent(event);
-        message = "Вы убрали событие из расписания";
+        message = "Вы убрали событие из избранного";
       } else {
         await _eventDetailsBloc.likeEvent(event);
-        message = "Вы добавили событие в расписание";
+        message = "Вы добавили событие в избранное";
       }
       Scaffold.of(context).showSnackBar(
           SnackBar(content: Text(message))

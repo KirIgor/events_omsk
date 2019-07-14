@@ -37,8 +37,7 @@ class AboutUsPage extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(top: 8, left: 12, right: 12),
                 child: Text(
-                    "Создано в рамках проекта \"Мобилаториум\". Разработку курировала омская IT-компания Effective, "
-                    "Которая специализируется на разработке мобильных приложений для Retail, Telecom и B2G",
+                    "Создано в рамках проекта «Мобилаториум». Куратор — омская IT-компания Effective, которая специализируется на разработке мобильных приложений для Retail, Telecom и B2G.",
                     style: TextStyle(color: Colors.black54)),
               ),
               ListTile(
