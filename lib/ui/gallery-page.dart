@@ -9,6 +9,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share/share.dart';
+import 'package:swipedetector/swipedetector.dart';
 
 import 'dart:math';
 
@@ -155,11 +156,13 @@ class GalleryPhotosPageState extends State<GalleryPhotosPage> {
                   final Album album = snapshot.data;
                   final List<Photo> photos = album.photos;
                   return Scaffold(
-                      appBar: AppBar(title: Text(album.year), actions: <Widget>[
-                        IconButton(
-                            icon: Icon(Icons.description),
-                            onPressed: () => _showAlbumInfo(context, album))
-                      ]),
+                      appBar: AppBar(
+                          title: Text("${album.year} год"),
+                          actions: <Widget>[
+                            IconButton(
+                                icon: Icon(Icons.description),
+                                onPressed: () => _showAlbumInfo(context, album))
+                          ]),
                       body: Stack(children: <Widget>[
                         GridView.count(
                           crossAxisCount: 3,
@@ -251,6 +254,7 @@ class GalleryDetailsPage extends StatefulWidget {
 
 class GalleryDetailsPageState extends State<GalleryDetailsPage> {
   PageController _pageController;
+
   int _currentIndex;
 
   double _opacity = 1;

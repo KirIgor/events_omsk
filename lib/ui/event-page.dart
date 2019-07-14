@@ -28,7 +28,7 @@ void addToCalendar(EventFull event) {
   final Event addedEvent = Event(
     title: event.name,
     description: event.description,
-    location: event.address,
+    location: event.address ?? event.place,
     startDate: event.startDateTime,
     endDate: event.endDateTime ?? event.startDateTime,
   );
@@ -111,10 +111,10 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
           }
         },
         itemBuilder: (BuildContext context) => [
-              const PopupMenuItem(
-                  value: ActionsTypes.addToCalendar,
-                  child: Text("Добавить в календарь"))
-            ],
+          const PopupMenuItem(
+              value: ActionsTypes.addToCalendar,
+              child: Text("Добавить в календарь"))
+        ],
       )
     ];
   }
@@ -140,8 +140,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
             dotIncreaseSize: 1.3,
             autoplayDuration: const Duration(seconds: 5),
             boxFit: BoxFit.fitWidth,
-            images: resultImages
-        ));
+            images: resultImages));
   }
 
   Widget _buildFloatingActionButton(EventFull event, BuildContext context) {
@@ -159,7 +158,8 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
   }
 
   Widget getBody(EventFull event, UserInfo userInfo, BuildContext context) {
-    widget._topBarHeight = event.mainPhoto == null || event.mainPhoto.isEmpty ? 100 : 200;
+    widget._topBarHeight =
+        event.mainPhoto == null || event.mainPhoto.isEmpty ? 100 : 200;
 
     return Stack(
       children: <Widget>[
@@ -261,9 +261,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
         await _eventDetailsBloc.likeEvent(event);
         message = "Вы добавили событие в избранное";
       }
-      Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text(message))
-      );
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
     } on NotAuthorizedException {
       Navigator.pushNamed(context, "/auth");
     }
@@ -291,8 +289,7 @@ class EventPageInfo extends StatelessWidget {
       );
 
     return ListTile(
-      title: Text(event.name,
-          style: const TextStyle(fontSize: 25)),
+      title: Text(event.name, style: const TextStyle(fontSize: 25)),
     );
   }
 
@@ -350,25 +347,43 @@ class EventPageContact extends StatelessWidget {
 
   const EventPageContact({Key key, this.event}) : super(key: key);
 
+  Widget _buildCardWithPhone(BuildContext context, String phone) {
+    return Card(
+      child: ListTile(
+        leading:
+            Icon(Icons.phone, color: Theme.of(context).primaryColor, size: 30),
+        title: Text(event.address ?? event.place),
+        subtitle: Text(phone),
+        onTap: () => _openPhone(phone),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (event.phone != null) {
+      final phones = event.phone.split(",");
+
+      if (phones.length >= 2) {
+        return Column(
+            children: phones
+                .map((phone) => _buildCardWithPhone(context, phone))
+                .toList());
+      } else {
+        return _buildCardWithPhone(context, event.phone);
+      }
+    } else {
       return Card(
         child: ListTile(
-          leading: Icon(Icons.phone,
-              color: Theme.of(context).primaryColor, size: 30),
-          title: Text(event.address ?? ""),
-          subtitle: Text(event.phone),
-          onTap: () => _openPhone(event),
-        ),
+            leading: Icon(Icons.info,
+                color: Theme.of(context).primaryColor, size: 30),
+            title: Text(event.address ?? event.place)),
       );
-    } else {
-      return Container();
     }
   }
 
-  void _openPhone(EventFull event) {
-    launch("tel:${event.phone}");
+  void _openPhone(String phone) {
+    launch("tel:$phone");
   }
 }
 

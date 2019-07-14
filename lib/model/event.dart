@@ -13,6 +13,7 @@ class EventFull {
   double _longitude;
   String _phone;
   String _address;
+  String _place;
   String _externalRef;
   List<Photo> _photos;
   bool liked;
@@ -38,6 +39,7 @@ class EventFull {
     _longitude = parsedJson["longitude"];
     _phone = parsedJson["phone"];
     _address = parsedJson["address"];
+    _place = parsedJson["place"];
     _externalRef = parsedJson["externalRef"];
     _photos = (parsedJson["photos"] as List)
         .map((json) => Photo.fromJson(json))
@@ -68,6 +70,7 @@ class EventFull {
   double get longitude => _longitude;
   String get phone => _phone;
   String get address => _address;
+  String get place => _place;
   String get externalRef => _externalRef;
   List<Photo> get photos => _photos;
   int get likesCount => _likesCount;

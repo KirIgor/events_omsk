@@ -187,7 +187,12 @@ class _EventListState extends State<EventListPage> {
                         )
                       ],
                     )),
-                body: pagewiseList);
+                body: RefreshIndicator(
+                    child: pagewiseList,
+                    onRefresh: () async {
+                      _pagewiseLoadController.reset();
+                      await Future.value({});
+                    }));
           } else
             return Center(child: CircularProgressIndicator());
         });
