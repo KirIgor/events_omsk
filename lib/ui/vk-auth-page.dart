@@ -8,6 +8,8 @@ import 'package:omsk_events/di.dart';
 
 import 'dart:io';
 
+enum AgreeAction { agree, disagree }
+
 class VkAuthPage extends StatefulWidget {
   VkAuthPage({Key key}) : super(key: key);
 
@@ -16,6 +18,7 @@ class VkAuthPage extends StatefulWidget {
 }
 
 class _VkAuthPageState extends State<VkAuthPage> {
+  UserBloc _bloc;
   static final FlutterVkLogin vkSignIn = new FlutterVkLogin();
   String _error;
 
@@ -23,14 +26,62 @@ class _VkAuthPageState extends State<VkAuthPage> {
   void initState() {
     super.initState();
 
-    UserBloc bloc = BlocWidget.of(context);
+    _bloc = BlocWidget.of(context);
 
+    DI.acceptedProvider.getPrivacyPolicyAccepted().then((accepted) {
+      if (accepted) {
+        vkAuth();
+      } else {
+        showDialog<AgreeAction>(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text(
+                    "Для участия в обсуждениях мероприятий приложения «Омск: город сегодня» "
+                    "необходимо пройти авторизацию через учетную запись социальной сети "
+                    "«ВКонтакте» и подтвердить согласие на передачу общедоступной информации. "
+                    "Авторизация также позволит добавлять события в избранное."),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('НЕ СОГЛАСЕН'),
+                    onPressed: () {
+                      Navigator.pop(context, AgreeAction.disagree);
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('СОГЛАСЕН'),
+                    onPressed: () {
+                      Navigator.pop(context, AgreeAction.agree);
+                    },
+                  ),
+                ],
+              );
+            }).then((agree) async {
+          if (agree == AgreeAction.agree) {
+            await DI.acceptedProvider.setPrivacyPolicyAccepted(true);
+            vkAuth();
+          } else
+            Navigator.pop(context);
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Center(
+            child:
+                _error == null ? CircularProgressIndicator() : Text(_error)));
+  }
+
+  void vkAuth() {
     if (Platform.isAndroid) {
       vkSignIn.logIn(['offline']).then((VkLoginResult result) {
         switch (result.status) {
           case VKLoginStatus.loggedIn:
             final VKAccessToken accessToken = result.token;
-            bloc
+            _bloc
                 .authenticate(accessToken.token, int.parse(accessToken.userId))
                 .then((res) {
               Navigator.pop(context);
@@ -55,7 +106,7 @@ class _VkAuthPageState extends State<VkAuthPage> {
 
       vkSdk.authorizationStateUpdated.listen((result) async {
         if (result.state == VKAuthorizationState.Authorized) {
-          await bloc.authenticate(
+          await _bloc.authenticate(
               result.token.accessToken, int.parse(result.token.userId));
           Navigator.pop(context);
         } else {
@@ -67,13 +118,5 @@ class _VkAuthPageState extends State<VkAuthPage> {
 
       vkSdk.authorize(scopes, isSafariDisabled: true);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
-            child:
-                _error == null ? CircularProgressIndicator() : Text(_error)));
   }
 }

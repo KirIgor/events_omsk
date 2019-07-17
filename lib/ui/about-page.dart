@@ -53,33 +53,35 @@ class AboutPage extends StatelessWidget {
           ),
           Container(
               margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-                Text(
-                  "Приложение информирует о значимых городских мероприятиях - "
-                  "в поле зрения редакции попадают события Дня города, Нового года, Масленицы, Дня Победы и другие"
-                  "Ленту событий формируют структурные подразделения Администрации города Омска:\n",
-                  style: TextStyle(color: Colors.black54),
-                ),
-                InkWell(
-                    child: Text("-департамент информационной политики",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            color: Colors.blue,
-                            decoration: TextDecoration.underline)),
-                    onTap: () => _firstLink()),
-                InkWell(
-                    child: Text(
-                      "-управление информационно-коммуникационных технологии\n",
-                      style: TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Приложение информирует о значимых городских мероприятиях - "
+                      "в поле зрения редакции попадают события Дня города, Нового года, Масленицы, Дня Победы и другие"
+                      "Ленту событий формируют структурные подразделения Администрации города Омска:\n",
+                      style: TextStyle(color: Colors.black54),
                     ),
-                    onTap: () => _secondLink()),
-                Text(
-                    "Возможные изменения места проведения, времени начала мероприятий оперативно отражаются в приложении. "
-                    "Планируйте собственные праздничные маршруты с удобством и удовольствием",
-                    style: TextStyle(color: Colors.black54)),
-              ])),
+                    InkWell(
+                        child: Text("-департамент информационной политики",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline)),
+                        onTap: () => _firstLink()),
+                    InkWell(
+                        child: Text(
+                          "-управление информационно-коммуникационных технологии\n",
+                          style: TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline),
+                        ),
+                        onTap: () => _secondLink()),
+                    Text(
+                        "Возможные изменения места проведения, времени начала мероприятий оперативно отражаются в приложении. "
+                        "Планируйте собственные праздничные маршруты с удобством и удовольствием",
+                        style: TextStyle(color: Colors.black54)),
+                  ])),
           Divider(),
           ListTile(
               leading: Icon(Icons.star),

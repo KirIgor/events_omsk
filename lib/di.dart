@@ -4,6 +4,8 @@ import 'package:omsk_events/resources/providers/simple-vk-sdk-provider.dart';
 import 'package:omsk_events/resources/providers/token-provider.dart';
 import 'package:omsk_events/resources/providers/user-info-provider.dart';
 import 'package:omsk_events/resources/providers/vk-sdk-provider.dart';
+import 'package:omsk_events/resources/providers/privacy-policy-accepted-provider.dart';
+import 'package:omsk_events/resources/providers/shared-pref-privacy-policy-accepted-provider.dart';
 import 'package:omsk_events/resources/repositories/abstract/album-repository.dart';
 import 'package:omsk_events/resources/repositories/abstract/comment-repository.dart';
 import 'package:omsk_events/resources/repositories/abstract/setting-repository.dart';
@@ -24,5 +26,7 @@ class DI {
 
   static TokenProvider tokenProvider = UserInfoTokenProvider();
   static UserInfoProvider userInfoProvider = SharedPreferenceUserInfoProvider();
+  static PrivacyPolicyAcceptedProvider acceptedProvider =
+      SharedPreferencePrivacyPolicyAcceptedProvider();
   static VkSdkProvider vkSdkProvider = SimpleVkSdkProvider();
 }
