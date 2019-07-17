@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class AboutPage extends StatelessWidget {
   @override
@@ -17,22 +18,12 @@ class AboutPage extends StatelessWidget {
             padding: const EdgeInsets.all(52.0),
             child: new Column(children: <Widget>[
               ClipRRect(
-                borderRadius: BorderRadius.circular(10000.0),
+                borderRadius: BorderRadius.circular(10.0),
 
                 child: Container(
-                    width: 100.0,
-                    height: 100.0,
-                    decoration: BoxDecoration(
-                      gradient: new LinearGradient(
-                        colors: [
-                          Color(0xA8000000),
-                          Color(0xA8000000),
-                        ],
-                      ),
-                    ),
                     child: Image(
                       fit: BoxFit.fill,
-                      image: AssetImage("assets/logo.png"),
+                      image: AssetImage("assets/omsk_icon.png"),
                     ) //image
                     ), //container im
               ), //cliprr
@@ -57,54 +48,55 @@ class AboutPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "Приложение информирует о значимых городских мероприятиях - "
-                      "в поле зрения редакции попадают события Дня города, Нового года, Масленицы, Дня Победы и другие"
-                      "Ленту событий формируют структурные подразделения Администрации города Омска:\n",
+                      "Приложение «Омск: город сегодня» информирует о значимых городских мероприятиях — в поле зрения редакции "
+                      "попадают события Дня города, Нового года, М—асленицы, Дня Победы и другие.\n",
                       style: TextStyle(color: Colors.black54),
                     ),
-                    InkWell(
-                        child: Text("-департамент информационной политики",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline)),
-                        onTap: () => _firstLink()),
-                    InkWell(
-                        child: Text(
-                          "-управление информационно-коммуникационных технологии\n",
-                          style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline),
-                        ),
-                        onTap: () => _secondLink()),
+                    Wrap(children: <Widget>[
+                      Text(
+                          "Ленту событий формируют структурные подразделения Администрации города Омска:  ",
+                          style: TextStyle(color: Colors.black54)),
+                      ListTile(
+                          title: Text("— департамент информационной политики",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline)),
+                          onTap: () => _firstLink()),
+                      ListTile(
+                          title: Text(
+                              "— управления информационно-коммуникационных технологий",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline)),
+                          onTap: () => _firstLink())
+                    ]),
                     Text(
-                        "Возможные изменения места проведения, времени начала мероприятий оперативно отражаются в приложении. "
-                        "Планируйте собственные праздничные маршруты с удобством и удовольствием",
+                        "\nВозможные изменения места проведения, времени начала мероприятий оперативно отражаются в приложении. "
+                        "Планируйте собственные праздничные маршруты с удобством и удовольствием!",
                         style: TextStyle(color: Colors.black54)),
                   ])),
           Divider(),
           ListTile(
               leading: Icon(Icons.star),
               title: Text("Оценить приложение"),
-              onTap: _rateApp),
+              onTap: () => _rateApp()),
           ListTile(
               leading: Icon(Icons.info),
               title: Text("Политика конфиденциальности"),
-              onTap: _privacyPolicy),
+              onTap: () => _privacyPolicy()),
           ListTile(
               leading: Icon(Icons.share),
               title: Text("Поделиться приложением"),
-              onTap: _share)
+              onTap: () => _share())
         ]) //Column
             ) //cont
 
         ); //scaffold
   }
 
-  void _privacyPolicy() {
-    const url = "https://events.admomsk.ru/privacy_policy";
-    launch(url);
-  }
+  void _privacyPolicy() {}
 
   void _share() {
     const appUrl = "<Здесь будет ссылка>";

@@ -131,7 +131,7 @@ class EventItem extends StatelessWidget {
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Icon(Icons.group, color: Colors.black54),
+                                    Icon(Icons.favorite, color: Colors.black54),
                                     Container(
                                         margin:
                                             EdgeInsets.only(left: 4, right: 8),

@@ -129,7 +129,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
       photosWithMainImage.add(event.mainPhoto);
 
     final resultImages = photosWithMainImage.isEmpty
-        ? [AssetImage("assets/omsk.png")]
+        ? [AssetImage("assets/placeholder.png")]
         : photosWithMainImage.map((src) => NetworkImage(src)).toList();
 
     return FlexibleSpaceBar(
@@ -152,7 +152,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
           transform: Matrix4.identity()..scale(_scaleFromOffset(_offset)),
           child: FloatingActionButton(
             onPressed: () => onLikeOrDislike(event, context),
-            child: Icon(event.liked ? Icons.person : Icons.person_outline),
+            child: Icon(event.liked ? Icons.favorite : Icons.favorite_border),
           ),
         ));
   }
