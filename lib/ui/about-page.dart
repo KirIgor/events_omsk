@@ -86,22 +86,25 @@ class AboutPage extends StatelessWidget {
           ListTile(
               leading: Icon(Icons.star),
               title: Text("Оценить приложение"),
-              onTap: () => _rateApp()),
+              onTap: _rateApp),
           ListTile(
               leading: Icon(Icons.info),
               title: Text("Политика конфиденциальности"),
-              onTap: () => _privacyPolicy()),
+              onTap: _privacyPolicy),
           ListTile(
               leading: Icon(Icons.share),
               title: Text("Поделиться приложением"),
-              onTap: () => _share())
+              onTap: _share)
         ]) //Column
             ) //cont
 
         ); //scaffold
   }
 
-  void _privacyPolicy() {}
+  void _privacyPolicy() {
+    const url = "https://events.admomsk.ru/privacy_policy";
+    launch(url);
+  }
 
   void _share() {
     const appUrl = "<Здесь будет ссылка>";

@@ -97,11 +97,15 @@ class _AppState extends State<App> {
     switch (_currentSelected) {
       case 0:
         return BlocWidget(
-            bloc: EventListBloc(eventRepository: DI.eventRepository, settingRepository: DI.settingRepository),
+            bloc: EventListBloc(
+                eventRepository: DI.eventRepository,
+                settingRepository: DI.settingRepository),
             child: EventListPage());
       case 1:
         return BlocWidget(
-            bloc: EventMapBloc(eventRepository: DI.eventRepository, settingRepository: DI.settingRepository),
+            bloc: EventMapBloc(
+                eventRepository: DI.eventRepository,
+                settingRepository: DI.settingRepository),
             child: MapPage());
       case 2:
         return BlocWidget(
@@ -122,7 +126,7 @@ class _AppState extends State<App> {
     return Theme.of(context).primaryColor;
   }
 
-  Widget getScaffold(){
+  Widget getScaffold() {
     return Scaffold(
         body: getBody(),
         bottomNavigationBar: BottomNavigationBar(
@@ -146,9 +150,9 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     Future.delayed(Duration(seconds: 1, milliseconds: 500)).then((v) {
       if (_isSplashTime)
-      setState(() {
-        _isSplashTime = false;
-      });
+        setState(() {
+          _isSplashTime = false;
+        });
     });
 
     return MaterialApp(
@@ -161,8 +165,7 @@ class _AppState extends State<App> {
           brightness: Brightness.light,
           primarySwatch: Colors.blue,
         ),
-        home: _isSplashTime ? SplashPage() : getScaffold()
-    );
+        home: _isSplashTime ? SplashPage() : getScaffold());
   }
 
   Route _onGenerateRoute(RouteSettings settings) {

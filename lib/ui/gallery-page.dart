@@ -9,7 +9,6 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share/share.dart';
-import 'package:swipedetector/swipedetector.dart';
 
 import 'dart:math';
 
