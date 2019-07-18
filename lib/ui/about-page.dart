@@ -22,9 +22,9 @@ class AboutPage extends StatelessWidget {
 
                 child: Container(
                     child: Image(
-                      fit: BoxFit.fill,
-                      image: AssetImage("assets/omsk_icon.png"),
-                    ) //image
+                  fit: BoxFit.fill,
+                  image: AssetImage("assets/omsk_icon.png"),
+                ) //image
                     ), //container im
               ), //cliprr
               new Container(
@@ -48,8 +48,10 @@ class AboutPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "Приложение «Омск: город сегодня» информирует о значимых городских мероприятиях — в поле зрения редакции "
-                      "попадают события Дня города, Нового года, М—асленицы, Дня Победы и другие.\n",
+                      "Приложение «Омск: город сегодня» информирует о значимых городских мероприятиях. "
+                      "В поле зрения редакции попадают события как масштабные, уникальные, "
+                      "привлекающие внимание огромного количества людей, так и небольшие, "
+                      "но от этого не менее интересные и важные.\n",
                       style: TextStyle(color: Colors.black54),
                     ),
                     Wrap(children: <Widget>[
@@ -61,21 +63,29 @@ class AboutPage extends StatelessWidget {
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   color: Colors.blue,
-                                  decoration: TextDecoration.underline)),
-                          onTap: () => _firstLink()),
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 14)),
+                          onTap: _firstLink),
                       ListTile(
                           title: Text(
                               "— управления информационно-коммуникационных технологий",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   color: Colors.blue,
-                                  decoration: TextDecoration.underline)),
-                          onTap: () => _firstLink())
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 14)),
+                          onTap: _secondLink)
                     ]),
-                    Text(
-                        "\nВозможные изменения места проведения, времени начала мероприятий оперативно отражаются в приложении. "
-                        "Планируйте собственные праздничные маршруты с удобством и удовольствием!",
-                        style: TextStyle(color: Colors.black54)),
+                    Container(
+                        margin: EdgeInsets.only(top: 20),
+                        child: Text(
+                            "Возможные изменения места проведения, времени начала мероприятий оперативно отражаются в приложении.",
+                            style: TextStyle(color: Colors.black54))),
+                    Container(
+                        margin: EdgeInsets.only(top: 20),
+                        child: Text(
+                            "Будьте в курсе всего самого интересного! Планируйте свой досуг в Омске с удобством и удовольствием.",
+                            style: TextStyle(color: Colors.black54)))
                   ])),
           Divider(),
           ListTile(
@@ -96,20 +106,28 @@ class AboutPage extends StatelessWidget {
         ); //scaffold
   }
 
-  void _privacyPolicy() {}
+  void _privacyPolicy() {
+    const url = "https://events.admomsk.ru/privacy_policy";
+    launch(url);
+  }
 
   void _share() {
-    const appUrl = "<Здесь будет ссылка>";
+    const appUrl =
+        "https://play.google.com/store/apps/details?id=ru.admomsk.omsk_events&hl=ru";
 
     //TODO(Change app url)
     Share.plainText(
             title: "Карта праздничных мероприятий Омска",
             text:
-                "Скачайте приложение с $appUrl и будьте в курсе всех праздничных мероприятий в гооде")
+                "Скачайте приложение с $appUrl и будьте в курсе всех праздничных мероприятий в городе")
         .share();
   }
 
-  void _rateApp() {}
+  void _rateApp() {
+    const url =
+        "https://play.google.com/store/apps/details?id=ru.admomsk.omsk_events&hl=ru";
+    launch(url);
+  }
 
   void _firstLink() {
     const url = "https://admomsk.ru/web/guest/government/divisions/45/about";

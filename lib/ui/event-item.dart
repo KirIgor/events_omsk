@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:share/share.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+const placeholder = AssetImage("assets/white_box.gif");
 
 class EventItem extends StatelessWidget {
   final EventShort _event;
@@ -31,6 +33,13 @@ class EventItem extends StatelessWidget {
 
   Widget getMainPhoto() {
     if (_event.mainImage != null && _event.mainImage.isNotEmpty) {
+      return FadeInImage(
+        fit: BoxFit.cover,
+        height: 180,
+        width: double.infinity,
+        image: CachedNetworkImageProvider(_event.mainImage),
+        placeholder: placeholder,
+      );
       return FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
           image: _event.mainImage,
