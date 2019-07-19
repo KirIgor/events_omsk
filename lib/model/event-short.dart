@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 
+import '../di.dart';
 import 'setting.dart';
 import 'event.dart';
 
@@ -24,9 +25,10 @@ class EventShort {
     _id = parsedJson["id"];
     _name = parsedJson["name"];
     _description = parsedJson["description"];
-    _startDateTime = DateTime.parse(parsedJson["startDateTime"]).toLocal();
+    _startDateTime =
+        DI.dateConverter.convert(DateTime.parse(parsedJson["startDateTime"]));
     _endDateTime = parsedJson["endDateTime"] != null
-        ? DateTime.parse(parsedJson["endDateTime"]).toLocal()
+        ? DI.dateConverter.convert(DateTime.parse(parsedJson["endDateTime"]))
         : null;
     _latitude = parsedJson["latitude"];
     _longitude = parsedJson["longitude"];
@@ -65,7 +67,8 @@ class EventShort {
 
   DateTime _dateWithoutTime(DateTime dateTime) => dateTime == null
       ? null
-      : DateTime(dateTime.year, dateTime.month, dateTime.day);
+      : DI.dateConverter
+          .convert(DateTime(dateTime.year, dateTime.month, dateTime.day));
 
   bool isMultidayAndWithinSpecialDates(List<Setting> settings) {
     if (endDateTime == null) return false;
@@ -88,7 +91,7 @@ class EventShort {
   }
 
   EventType getEventType(List<Setting> settings) {
-    final now = DateTime.now();
+    final now = DI.dateConverter.convert(DateTime.now());
 
     final startDate = _dateWithoutTime(startDateTime);
     final endDate = _dateWithoutTime(endDateTime);
@@ -129,7 +132,7 @@ class EventShort {
   }
 
   bool isToday() {
-    final now = DateTime.now();
+    final now = DI.dateConverter.convert(DateTime.now());
     final nowDate = _dateWithoutTime(now);
 
     final startDate = _dateWithoutTime(startDateTime);
@@ -147,7 +150,7 @@ class EventShort {
   bool isOnGoing() {
     if (endDateTime == null) return false;
 
-    final now = DateTime.now();
+    final now = DI.dateConverter.convert(DateTime.now());
     return startDateTime.isBefore(now) && endDateTime.isAfter(now);
   }
 

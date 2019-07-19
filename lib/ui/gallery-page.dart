@@ -12,7 +12,7 @@ import 'package:share/share.dart';
 
 import 'dart:math';
 
-import 'utils.dart';
+import 'package:omsk_events/utils/utils.dart';
 
 const placeholder = AssetImage("assets/grey_box.jpg");
 

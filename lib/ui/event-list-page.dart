@@ -8,7 +8,8 @@ import 'package:omsk_events/model/event.dart';
 import 'package:loader_search_bar/loader_search_bar.dart';
 import 'package:omsk_events/model/setting.dart';
 import 'package:rxdart/rxdart.dart';
-import 'utils.dart';
+import 'package:omsk_events/utils/utils.dart';
+import '../di.dart';
 import 'event-item.dart';
 
 class EventListPage extends StatefulWidget {
@@ -61,15 +62,15 @@ class _EventListState extends State<EventListPage> {
   }
 
   void _showHelp(List<Setting> settings) {
-    final specialDate1 = DateTime.parse(settings
+    final specialDate1 = DI.dateConverter.convert(DateTime.parse(settings
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_1")
-        .value);
-    final specialDate2 = DateTime.parse(settings
+        .value));
+    final specialDate2 = DI.dateConverter.convert(DateTime.parse(settings
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_2")
-        .value);
-    final specialDate3 = DateTime.parse(settings
+        .value));
+    final specialDate3 = DI.dateConverter.convert(DateTime.parse(settings
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_3")
-        .value);
+        .value));
 
     final justDayFormat = DateFormat("d");
     final specialDateFormat = DateFormat("d MMMM", "ru_RU");

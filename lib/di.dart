@@ -16,6 +16,8 @@ import 'package:omsk_events/resources/repositories/api-setting-repository.dart';
 import 'package:omsk_events/resources/repositories/api-comment-repository.dart';
 import 'package:omsk_events/resources/repositories/api-event-repository.dart';
 import 'package:omsk_events/resources/repositories/api-timetable-repository.dart';
+import 'package:omsk_events/utils/date-converter.dart';
+import 'package:omsk_events/utils/omsk-date-converter.dart';
 
 class DI {
   static TimetableRepository timetableRepository = ApiTimetableRepository();
@@ -29,4 +31,6 @@ class DI {
   static PrivacyPolicyAcceptedProvider acceptedProvider =
       SharedPreferencePrivacyPolicyAcceptedProvider();
   static VkSdkProvider vkSdkProvider = SimpleVkSdkProvider();
+
+  static DateConverter dateConverter = OmskDateConverter();
 }

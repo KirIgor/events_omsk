@@ -2,6 +2,8 @@ import 'package:omsk_events/model/photo.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:omsk_events/model/setting.dart';
 
+import '../di.dart';
+
 class EventFull {
   int _id;
   String _name;
@@ -31,9 +33,10 @@ class EventFull {
     _description =
         parsedJson["description"] ?? parsedJson["croppedDescription"];
     _hasAlbums = parsedJson["hasAlbums"];
-    _startDateTime = DateTime.parse(parsedJson["startDateTime"]).toLocal();
+    _startDateTime =
+        DI.dateConverter.convert(DateTime.parse(parsedJson["startDateTime"]));
     _endDateTime = parsedJson["endDateTime"] != null
-        ? DateTime.parse(parsedJson["endDateTime"]).toLocal()
+        ? DI.dateConverter.convert(DateTime.parse(parsedJson["endDateTime"]))
         : null;
     _latitude = parsedJson["latitude"];
     _longitude = parsedJson["longitude"];
@@ -55,7 +58,8 @@ class EventFull {
   bool isMultidayAndWithinSpecialDates(List<Setting> settings) =>
       EventShort.fromEventFull(this).isMultidayAndWithinSpecialDates(settings);
 
-  EventType getEventType(List<Setting> settings) => EventShort.fromEventFull(this).getEventType(settings);
+  EventType getEventType(List<Setting> settings) =>
+      EventShort.fromEventFull(this).getEventType(settings);
 
   bool isToday() => EventShort.fromEventFull(this).isToday();
   bool isOnGoing() => EventShort.fromEventFull(this).isOnGoing();

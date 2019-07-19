@@ -6,7 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api-prodiver.dart';
 
-class SharedPreferenceUserInfoProvider extends APIProvider  implements UserInfoProvider{
+class SharedPreferenceUserInfoProvider extends APIProvider
+    implements UserInfoProvider {
   static const String USER_INFO = "user_info";
 
   static UserInfo _userInfo;
@@ -22,7 +23,8 @@ class SharedPreferenceUserInfoProvider extends APIProvider  implements UserInfoP
         return base64 + "==";
       case 3:
         return base64 + "=";
-      default: throw Exception("WTF");
+      default:
+        throw Exception("WTF");
     }
   }
 
@@ -42,7 +44,7 @@ class SharedPreferenceUserInfoProvider extends APIProvider  implements UserInfoP
             String.fromCharCodes(base64Decode(
                 _padBase64(userInfo.token.split(".")[1]))))["exp"] *
         1000);
-    if (expiresIn.isBefore(DateTime.now())) return null;
+    if (expiresIn.isBefore(DateTime.now().toUtc())) return null;
 
     _userInfo = userInfo;
     return userInfo;
@@ -60,7 +62,6 @@ class SharedPreferenceUserInfoProvider extends APIProvider  implements UserInfoP
     final response = await _client.get("$baseURL/users/");
 
     if (response.statusCode == 200) {
-
     } else
       throw Exception(response.body);
   }

@@ -4,6 +4,8 @@ import 'package:share/share.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import '../di.dart';
+
 const placeholder = AssetImage("assets/white_box.gif");
 
 class EventItem extends StatelessWidget {
@@ -65,7 +67,8 @@ class EventItem extends StatelessWidget {
   }
 
   bool isPast() {
-    final currentMillis = DateTime.now().millisecondsSinceEpoch;
+    final currentMillis =
+        DI.dateConverter.convert(DateTime.now()).millisecondsSinceEpoch;
     return (_event.endDateTime?.millisecondsSinceEpoch ?? currentMillis) <
         currentMillis;
   }

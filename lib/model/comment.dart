@@ -1,3 +1,5 @@
+import '../di.dart';
+
 class Comment {
   int _id;
   String _userAvatar;
@@ -13,7 +15,7 @@ class Comment {
     _userAvatar = parsedJson["userAvatar"];
     _userName = parsedJson["userName"];
     _vkId = parsedJson["vkId"];
-    _modifiedAt = DateTime.parse(parsedJson["modifiedAt"]).toLocal();
+    _modifiedAt = DI.dateConverter.convert(DateTime.parse(parsedJson["modifiedAt"]));
   }
 
   Comment({int id, String text, String userAvatar, String userName})

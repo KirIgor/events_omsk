@@ -9,6 +9,8 @@ import 'package:omsk_events/model/event-short.dart';
 
 import 'dart:async';
 
+import '../di.dart';
+
 const initZoom = 11.5;
 const dZoomToChangeMarkers = 1.0;
 const gridCountXInView = 5;
@@ -33,8 +35,10 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   List<EventShort> _events;
   List<Setting> _settings;
 
-  EventShort _prev = EventShort(id: -1, startDateTime: DateTime.now());
-  EventShort _selected = EventShort(id: -1, startDateTime: DateTime.now());
+  EventShort _prev = EventShort(
+      id: -1, startDateTime: DI.dateConverter.convert(DateTime.now()));
+  EventShort _selected = EventShort(
+      id: -1, startDateTime: DI.dateConverter.convert(DateTime.now()));
 
   AnimationController _controller;
   Animation<Offset> _animationOut;
@@ -213,7 +217,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
 
   Set<Marker> _getAllMarkersFromEvents(
       List<Setting> settings, List<EventShort> events) {
-    final now = DateTime.now();
+    final now = DI.dateConverter.convert(DateTime.now());
     return events
         .where((e) => _filterPast
             ? e.endDateTime != null
@@ -245,15 +249,15 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   }
 
   void _showHelp(List<Setting> settings) {
-    final specialDate1 = DateTime.parse(settings
+    final specialDate1 = DI.dateConverter.convert(DateTime.parse(settings
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_1")
-        .value);
-    final specialDate2 = DateTime.parse(settings
+        .value));
+    final specialDate2 = DI.dateConverter.convert(DateTime.parse(settings
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_2")
-        .value);
-    final specialDate3 = DateTime.parse(settings
+        .value));
+    final specialDate3 = DI.dateConverter.convert(DateTime.parse(settings
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_3")
-        .value);
+        .value));
 
     final justDayFormat = DateFormat("d");
     final specialDateFormat = DateFormat("d MMMM", "ru_RU");
