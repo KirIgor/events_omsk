@@ -2,6 +2,7 @@ package io.flutter.plugins;
 
 import io.flutter.plugin.common.PluginRegistry;
 import com.javih.add2calendar.Add2CalendarPlugin;
+import io.flutter.plugins.firebase.core.FirebaseCorePlugin;
 import io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin;
 import com.objresponse.fluttervklogin.FlutterVkLoginPlugin;
 import yury.smidovich.flutter_vk_sdk.VkSdkPlugin;
@@ -21,6 +22,7 @@ public final class GeneratedPluginRegistrant {
       return;
     }
     Add2CalendarPlugin.registerWith(registry.registrarFor("com.javih.add2calendar.Add2CalendarPlugin"));
+    FirebaseCorePlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebase.core.FirebaseCorePlugin"));
     FirebaseMessagingPlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin"));
     FlutterVkLoginPlugin.registerWith(registry.registrarFor("com.objresponse.fluttervklogin.FlutterVkLoginPlugin"));
     VkSdkPlugin.registerWith(registry.registrarFor("yury.smidovich.flutter_vk_sdk.VkSdkPlugin"));
