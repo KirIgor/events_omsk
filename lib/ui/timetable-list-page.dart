@@ -41,11 +41,11 @@ class TimetableListPageState extends State<TimetableListPage> {
               tooltip: "Фильтрация",
               icon: Icon(Icons.filter_list),
               itemBuilder: (context) => [
-                    CheckedPopupMenuItem(
-                      child: Text("Убрать прошедшие"),
-                      value: "filterPast",
-                      checked: _filterPast,
-                    )
+                    PopupMenuItem(
+                        child: Text(_filterPast
+                            ? "Добавить прошедшие"
+                            : "Убрать прошедшие"),
+                        value: "filterPast")
                   ],
               onSelected: (value) {
                 if (value == "filterPast") {
@@ -67,20 +67,20 @@ class TimetableListPageState extends State<TimetableListPage> {
                     return ListView.separated(
                       separatorBuilder: (context, position) => Divider(),
                       itemBuilder: (context, position) => Dismissible(
-                            key: Key(timetable[position].id.toString()),
-                            child: TimetableItem(event: timetable[position]),
-                            direction: DismissDirection.endToStart,
-                            onDismissed: (dir) => _timetableBloc
-                                .removeFromTimetable(timetable[position].id),
-                            background: Container(
-                              color: Colors.red,
-                              child: Container(
-                                child: Icon(Icons.delete, color: Colors.white),
-                                margin: EdgeInsets.only(right: 32),
-                              ),
-                              alignment: Alignment.centerRight,
-                            ),
+                        key: Key(timetable[position].id.toString()),
+                        child: TimetableItem(event: timetable[position]),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (dir) => _timetableBloc
+                            .removeFromTimetable(timetable[position].id),
+                        background: Container(
+                          color: Colors.red,
+                          child: Container(
+                            child: Icon(Icons.delete, color: Colors.white),
+                            margin: EdgeInsets.only(right: 32),
                           ),
+                          alignment: Alignment.centerRight,
+                        ),
+                      ),
                       itemCount: timetable.length,
                     );
                   return Center(
