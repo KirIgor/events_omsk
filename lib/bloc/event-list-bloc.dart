@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:omsk_events/model/event.dart';
@@ -22,6 +21,7 @@ class EventListBloc extends BlocBase {
         _settingRepository = settingRepository;
 
   bool _isBig;
+  bool _isFree;
   EventOrderBy _orderBy = EventOrderBy.startDateTime;
   String _query;
   EventOrderType _orderType = EventOrderType.ASC;
@@ -34,19 +34,24 @@ class EventListBloc extends BlocBase {
     if (_query == null || _query.isEmpty) {
       return await _eventRepository.fetchEvents(
         page: page,
-        pageSize: 5,
+        pageSize: 10,
         orderBy: _orderBy,
         orderType: _orderType,
-        filter: {"isBig": _isBig, "withoutPast": true},
+        filter: {"isBig": _isBig, "isFree": _isFree, "withoutPast": true},
       );
     }
 
     return await _eventRepository.fetchEvents(
       page: page,
-      pageSize: 5,
+      pageSize: 10,
       orderBy: _orderBy,
       orderType: _orderType,
-      filter: {"name": _query, "isBig": _isBig, "withoutPast": true},
+      filter: {
+        "name": _query,
+        "isBig": _isBig,
+        "isFree": _isFree,
+        "withoutPast": true
+      },
     );
   }
 
@@ -75,6 +80,13 @@ class EventListBloc extends BlocBase {
       _isBig = true;
     else
       _isBig = null;
+  }
+
+  void changeFreeFilter(bool isFree) {
+    if (isFree)
+      _isFree = true;
+    else
+      _isFree = null;
   }
 
   Future<void> fetchAllSettings() async {

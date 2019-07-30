@@ -309,7 +309,7 @@ class EventPageInfo extends StatelessWidget {
                 size: 30,
               ),
               onTap: () => addToCalendar(event)),
-          _buildDescription(event),
+          _buildDescription(event)
         ],
       ),
       padding: const EdgeInsets.only(bottom: 20),
@@ -347,39 +347,60 @@ class EventPageContact extends StatelessWidget {
 
   const EventPageContact({Key key, this.event}) : super(key: key);
 
-  Widget _buildCardWithPhone(BuildContext context, String phone) {
-    return Card(
-      child: ListTile(
-        leading:
-            Icon(Icons.phone, color: Theme.of(context).primaryColor, size: 30),
-        title: Text(event.address ?? event.place),
-        subtitle: Text(phone),
-        onTap: () => _openPhone(phone),
-      ),
-    );
+  List<Widget> _buildPhones(Color primaryColor) {
+    if (event.phone == null) return List();
+
+    final phones = event.phone.split(", ");
+
+    return phones
+        .map((phone) => ListTile(
+              leading: Icon(Icons.phone, color: primaryColor),
+              title: Text(phone),
+              onTap: () {
+                _openPhone(phone);
+              },
+            ))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (event.phone != null) {
-      final phones = event.phone.split(",");
+    final primaryColor = Theme.of(context).primaryColor;
 
-      if (phones.length >= 2) {
-        return Column(
-            children: phones
-                .map((phone) => _buildCardWithPhone(context, phone))
-                .toList());
-      } else {
-        return _buildCardWithPhone(context, event.phone);
-      }
-    } else {
-      return Card(
-        child: ListTile(
-            leading: Icon(Icons.info,
-                color: Theme.of(context).primaryColor, size: 30),
-            title: Text(event.address ?? event.place)),
-      );
-    }
+    return Card(
+      child: Column(
+        children: <Widget>[
+          ListTile(
+            leading: Icon(
+              Icons.info,
+              color: primaryColor,
+            ),
+            title: Text(event.isFree ? "Вход свободный" : "По билетам"),
+          ),
+          event.address != null && event.address.isNotEmpty
+              ? ListTile(
+                  leading: Icon(
+                    Icons.place,
+                    color: primaryColor,
+                  ),
+                  title: Text(event.address),
+                  onTap: () {
+                    launch("geo:${event.latitude},${event.longitude}");
+                  },
+                )
+              : Container(),
+          event.place != null && event.place.isNotEmpty
+              ? ListTile(
+                  leading: Icon(Icons.explore, color: primaryColor),
+                  title: Text(event.place),
+                  onTap: () {
+                    launch("geo:${event.latitude},${event.longitude}");
+                  },
+                )
+              : Container(),
+        ]..addAll(_buildPhones(primaryColor)),
+      ),
+    );
   }
 
   void _openPhone(String phone) {
@@ -411,7 +432,7 @@ class EventPageToAlbumAndVK extends StatelessWidget {
                 },
               )
             : Container(),
-        event.externalRef != null
+        event.externalRef != null && event.externalRef.isNotEmpty
             ? ListTile(
                 leading: Icon(Icons.language, color: color, size: 30),
                 title: const Text("Подробнее о событии"),

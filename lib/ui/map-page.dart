@@ -134,11 +134,11 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                 tooltip: "Фильтрация",
                 icon: Icon(Icons.filter_list),
                 itemBuilder: (context) => [
-                  CheckedPopupMenuItem(
-                    child: Text("Убрать прошедшие"),
-                    value: "removePast",
-                    checked: _filterPast,
-                  )
+                  PopupMenuItem(
+                      child: Text(_filterPast
+                          ? "Добавить прошедшие"
+                          : "Убрать прошедшие"),
+                      value: "removePast")
                 ],
                 onSelected: (value) async {
                   if (value == "removePast") {

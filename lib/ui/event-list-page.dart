@@ -24,6 +24,7 @@ class _EventListState extends State<EventListPage> {
   SearchBarController _searchController;
   EventListBloc _bloc;
   bool isBig = false;
+  bool isFree = false;
   List<Setting> _settings;
 
   final searchStream = PublishSubject<String>();
@@ -38,7 +39,7 @@ class _EventListState extends State<EventListPage> {
         pageFuture: (pageIndex) {
           return _bloc.fetchNewEvents(pageIndex);
         },
-        pageSize: 5);
+        pageSize: 10);
 
     _searchController = SearchBarController(
       onClearQuery: () {
@@ -174,6 +175,11 @@ class _EventListState extends State<EventListPage> {
                               child: Text("Только масштабные"),
                               value: "big",
                               checked: isBig,
+                            ),
+                            CheckedPopupMenuItem(
+                              child: Text("Только бесплатные"),
+                              value: "free",
+                              checked: isFree,
                             )
                           ],
                           onSelected: (value) {
@@ -181,6 +187,12 @@ class _EventListState extends State<EventListPage> {
                               _bloc.changeBigFilter(!isBig);
                               setState(() {
                                 isBig = !isBig;
+                              });
+                              _pagewiseLoadController.reset();
+                            } else if (value == "free") {
+                              _bloc.changeFreeFilter(!isFree);
+                              setState(() {
+                                isFree = !isFree;
                               });
                               _pagewiseLoadController.reset();
                             }

@@ -22,6 +22,7 @@ class EventFull {
   int _likesCount;
   String _mainImage;
   bool _isBig;
+  bool _isFree;
 
   EventFull(DateTime startDateTime, DateTime endDateTime)
       : _startDateTime = startDateTime,
@@ -51,6 +52,7 @@ class EventFull {
     _likesCount = parsedJson["likesCount"];
     _mainImage = parsedJson["mainImage"];
     _isBig = parsedJson["isBig"];
+    _isFree = parsedJson["isFree"];
   }
 
   String eventTimeBounds() => EventShort.fromEventFull(this).eventTimeBounds();
@@ -81,6 +83,7 @@ class EventFull {
   String get mainPhoto => _mainImage;
 
   bool get isBig => _isBig;
+  bool get isFree => _isFree;
 }
 
 enum EventOrderBy { likesCount, startDateTime }

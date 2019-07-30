@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:share/share.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../di.dart';
@@ -42,12 +41,6 @@ class EventItem extends StatelessWidget {
         image: CachedNetworkImageProvider(_event.mainImage),
         placeholder: placeholder,
       );
-      return FadeInImage.memoryNetwork(
-          placeholder: kTransparentImage,
-          image: _event.mainImage,
-          height: 180,
-          width: double.infinity,
-          fit: BoxFit.cover);
     }
     return Container();
   }
@@ -118,7 +111,7 @@ class EventItem extends StatelessWidget {
                                       maxRadius: 8)),
                               Expanded(
                                 child: buildTitle(),
-                              )
+                              ),
                             ]),
                             Container(
                                 margin: EdgeInsets.only(top: 8),
@@ -128,6 +121,18 @@ class EventItem extends StatelessWidget {
                                   Container(
                                       margin: EdgeInsets.only(left: 4),
                                       child: Text(_event.eventTimeBounds(),
+                                          style:
+                                              TextStyle(color: Colors.black45)))
+                                ])),
+                            Container(
+                                margin: EdgeInsets.only(top: 8),
+                                child: Row(children: <Widget>[
+                                  Icon(Icons.place,
+                                      color: Colors.black45, size: 16.0),
+                                  Container(
+                                      margin: EdgeInsets.only(left: 4),
+                                      child: Text(
+                                          _event.address ?? _event.place,
                                           style:
                                               TextStyle(color: Colors.black45)))
                                 ]))
@@ -161,7 +166,16 @@ class EventItem extends StatelessWidget {
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize: 15,
-                                                color: Colors.black54)))
+                                                color: Colors.black54))),
+                                    Container(
+                                      margin: EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        _event.isFree
+                                            ? "Вход свободный"
+                                            : "По билетам",
+                                        style: TextStyle(color: Colors.black45),
+                                      ),
+                                    )
                                   ],
                                 ),
                                 IconButton(

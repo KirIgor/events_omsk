@@ -15,7 +15,11 @@ class EventShort {
   int _likesCount;
   String _mainImage;
   bool _isBig;
+  bool _isFree;
   int _commentsCount;
+  String _place;
+  String _phone;
+  String _address;
 
   EventShort({int id, DateTime startDateTime})
       : _id = id,
@@ -35,7 +39,11 @@ class EventShort {
     _likesCount = parsedJson["likesCount"];
     _mainImage = parsedJson["mainImage"];
     _isBig = parsedJson["big"];
+    _isFree = parsedJson["free"];
     _commentsCount = parsedJson["commentsCount"];
+    _place = parsedJson["place"];
+    _phone = parsedJson["phone"];
+    _address = parsedJson["address"];
   }
 
   EventShort.fromEventFull(EventFull e) {
@@ -49,7 +57,11 @@ class EventShort {
     _likesCount = e.likesCount;
     _mainImage = e.mainPhoto;
     _isBig = e.isBig;
+    _isFree = e.isFree;
     _commentsCount = 0;
+    _place = e.place;
+    _phone = e.phone;
+    _address = e.address;
   }
 
   String eventTimeBounds() {
@@ -164,7 +176,11 @@ class EventShort {
   int get likesCount => _likesCount;
   String get mainImage => _mainImage;
   bool get isBig => _isBig;
+  bool get isFree => _isFree;
   int get commentsCount => _commentsCount;
+  String get place => _place;
+  String get phone => _phone;
+  String get address => _address;
 }
 
 enum EventType {

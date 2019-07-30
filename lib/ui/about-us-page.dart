@@ -33,6 +33,12 @@ class AboutUsPage extends StatelessWidget {
                   title: Text("Татьяна Олейникова"),
                   onTap: () => _openTanya(),
                   subtitle: Text("ОмГУ, 3 курс")),
+              ListTile(
+                  leading: CircleAvatar(
+                      backgroundImage: AssetImage("assets/saturov.jpg")),
+                  title: Text("Евгений Сатуров"),
+                  onTap: () => _openSaturov(),
+                  subtitle: Text("Ментор проекта")),
               Divider(),
               Container(
                 margin: EdgeInsets.only(top: 8, left: 12, right: 12),
@@ -58,6 +64,11 @@ class AboutUsPage extends StatelessWidget {
 
   void _openTanya() async {
     const url = "https://vk.com/tanyaoleynikova";
+    launch(url);
+  }
+
+  void _openSaturov() async {
+    const url = "https://vk.com/saturov";
     launch(url);
   }
 
