@@ -8,6 +8,7 @@ import 'package:omsk_events/model/setting.dart';
 import 'package:omsk_events/model/event-short.dart';
 
 import 'dart:async';
+import 'dart:io';
 
 import '../di.dart';
 
@@ -54,21 +55,21 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
 
     _animationOut = Tween<Offset>(begin: Offset.zero, end: Offset(0.0, 1.0))
         .animate(CurvedAnimation(
-            parent: _controller,
-            curve: const Interval(
-              0.0,
-              0.5,
-              curve: Curves.easeOut,
-            )));
+        parent: _controller,
+        curve: const Interval(
+          0.0,
+          0.5,
+          curve: Curves.easeOut,
+        )));
     _animationIn =
         Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero)
             .animate(CurvedAnimation(
-                parent: _controller,
-                curve: const Interval(
-                  0.5,
-                  1,
-                  curve: Curves.easeIn,
-                )));
+            parent: _controller,
+            curve: const Interval(
+              0.5,
+              1,
+              curve: Curves.easeIn,
+            )));
   }
 
   @override
@@ -102,19 +103,20 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   Widget _buildMap() {
     return Scaffold(
         body: Stack(alignment: Alignment.bottomCenter, children: <Widget>[
-      GoogleMap(
-          markers: _markers,
-          onMapCreated: (controller) {
-            _updateMarkers(_zoom, _settings, _events);
-          },
-          rotateGesturesEnabled: false,
-          initialCameraPosition:
+          GoogleMap(
+              markers: _markers,
+              onMapCreated: (controller) {
+                _updateMarkers(_zoom, _settings, _events);
+              },
+              rotateGesturesEnabled: false,
+              myLocationButtonEnabled: false,
+              initialCameraPosition:
               CameraPosition(target: omskCameraPosition, zoom: initZoom)),
-      Opacity(
-          opacity: _prev.id == -1 ? 0 : 1,
-          child: _buildEventTile(_prev, _animationOut)),
-      _buildEventTile(_selected, _animationIn)
-    ]));
+          Opacity(
+              opacity: _prev.id == -1 ? 0 : 1,
+              child: _buildEventTile(_prev, _animationOut)),
+          _buildEventTile(_selected, _animationIn)
+        ]));
   }
 
   @override
@@ -152,34 +154,34 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         body: StreamBuilder(
             stream: _eventBloc.allSettings,
             builder: (context, settingsSnapshot) => StreamBuilder(
-                  stream: _eventBloc.allEvents,
-                  builder: (context,
-                      AsyncSnapshot<List<EventShort>> eventsSnapshot) {
-                    if (settingsSnapshot.connectionState ==
-                            ConnectionState.active &&
-                        eventsSnapshot.connectionState ==
-                            ConnectionState.active) {
-                      final events = eventsSnapshot.data;
-                      final settings = settingsSnapshot.data;
+              stream: _eventBloc.allEvents,
+              builder: (context,
+                  AsyncSnapshot<List<EventShort>> eventsSnapshot) {
+                if (settingsSnapshot.connectionState ==
+                    ConnectionState.active &&
+                    eventsSnapshot.connectionState ==
+                        ConnectionState.active) {
+                  final events = eventsSnapshot.data;
+                  final settings = settingsSnapshot.data;
 
-                      _events = events;
-                      _settings = settings;
+                  _events = events;
+                  _settings = settings;
 
-                      return _buildMap();
-                    } else if (eventsSnapshot.hasError ||
-                        settingsSnapshot.hasError) {
-                      return Text(eventsSnapshot.hasError
-                          ? eventsSnapshot.error.toString()
-                          : settingsSnapshot.error);
-                    }
-                    return Center(child: CircularProgressIndicator());
-                  },
-                )));
+                  return _buildMap();
+                } else if (eventsSnapshot.hasError ||
+                    settingsSnapshot.hasError) {
+                  return Text(eventsSnapshot.hasError
+                      ? eventsSnapshot.error.toString()
+                      : settingsSnapshot.error);
+                }
+                return Center(child: CircularProgressIndicator());
+              },
+            )));
   }
 
   double _getZIndex(EventShort e, EventType type) {
     double res =
-        (EventType.values.length - EventType.values.indexOf(type)).toDouble();
+    (EventType.values.length - EventType.values.indexOf(type)).toDouble();
     if (e.isBig && type != EventType.PAST) res += EventType.values.length;
     return res;
   }
@@ -195,7 +197,8 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         return BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueOrange);
       case EventType.SPECIAL_DATE_2:
-        return BitmapDescriptor.defaultMarkerWithHue(21); //dark orange
+        return BitmapDescriptor.defaultMarkerWithHue(
+            Platform.isIOS ? 8 : 21); //dark orange
       case EventType.SPECIAL_DATE_3:
         return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
       case EventType.FUTURE:
@@ -220,10 +223,10 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     final now = DI.dateConverter.convert(DateTime.now());
     return events
         .where((e) => _filterPast
-            ? e.endDateTime != null
-                ? e.endDateTime.isAfter(now)
-                : e.startDateTime.isAfter(now)
-            : true)
+        ? e.endDateTime != null
+        ? e.endDateTime.isAfter(now)
+        : e.startDateTime.isAfter(now)
+        : true)
         .map((e) {
       final eventType = e.getEventType(settings);
       return Marker(
@@ -275,12 +278,17 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                   "Длящиеся несколько дней и выпадающие на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
             ),
             ListTile(
-              leading: Icon(Icons.location_on, color: Colors.orange),
+              leading: Icon(Icons.location_on,
+                  color: Platform.isIOS
+                      ? Color.fromARGB(255, 177, 97, 12)
+                      : Colors.orange),
               title: Text(specialDateFormat.format(specialDate1)),
             ),
             ListTile(
               leading: Icon(Icons.location_on,
-                  color: Color.fromARGB(255, 255, 117, 24)),
+                  color: Platform.isIOS
+                      ? Color.fromARGB(255, 223, 58, 10)
+                      : Color.fromARGB(255, 255, 117, 24)),
               title: Text(specialDateFormat.format(specialDate2)),
             ),
             ListTile(
@@ -297,7 +305,10 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
               title: Text("Прошедшие"),
             ),
             ListTile(
-              leading: Icon(Icons.location_on, color: Colors.yellow),
+              leading: Icon(Icons.location_on,
+                  color: Platform.isIOS
+                      ? Color.fromARGB(255, 138, 131, 24)
+                      : Colors.yellow),
               title: Text("В другие дни"),
             ),
           ],

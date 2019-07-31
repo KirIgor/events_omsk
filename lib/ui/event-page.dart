@@ -19,21 +19,30 @@ import 'package:omsk_events/model/event.dart';
 import 'package:omsk_events/model/comment.dart';
 
 import 'dart:math';
+import 'dart:io';
 
 import 'gallery-page.dart';
 
 enum ActionsTypes { addToCalendar }
+
+final scaffoldKey = GlobalKey<ScaffoldState>();
 
 void addToCalendar(EventFull event) {
   final Event addedEvent = Event(
     title: event.name,
     description: event.description,
     location: event.address ?? event.place,
-    startDate: event.startDateTime,
-    endDate: event.endDateTime ?? event.startDateTime,
+    startDate: event.startDateTime.add(Duration(hours: -6)),
+    endDate:
+    (event.endDateTime ?? event.startDateTime).add(Duration(hours: -6)),
   );
 
   Add2Calendar.addEvent2Cal(addedEvent);
+
+  if (Platform.isIOS) {
+    scaffoldKey.currentState.showSnackBar(
+        SnackBar(content: Text("Событие успешно добавлено в календарь")));
+  }
 }
 
 class EventPage extends StatefulWidget {
@@ -134,7 +143,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
 
     return FlexibleSpaceBar(
         title:
-            Opacity(opacity: _opacityFromOffset(_offset), child: Text(title)),
+        Opacity(opacity: _opacityFromOffset(_offset), child: Text(title)),
         background: Carousel(
             dotSize: 10,
             dotIncreaseSize: 1.3,
@@ -159,7 +168,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
 
   Widget getBody(EventFull event, UserInfo userInfo, BuildContext context) {
     widget._topBarHeight =
-        event.mainPhoto == null || event.mainPhoto.isEmpty ? 100 : 200;
+    event.mainPhoto == null || event.mainPhoto.isEmpty ? 100 : 200;
 
     return Stack(
       children: <Widget>[
@@ -175,17 +184,17 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                 flexibleSpace: _buildFlexibleSpaceBar(event)),
             SliverList(
                 delegate: SliverChildListDelegate(<Widget>[
-              EventPageInfo(event: event),
-              EventPageMap(event: event),
-              EventPageContact(event: event),
-              EventPageToAlbumAndVK(event: event),
-              EventPageCommentForm(
-                pagewiseLoadController: _pagewiseLoadController,
-                commentFadeAnimationController: _animationController,
-                event: event,
-                userInfo: userInfo,
-              )
-            ])),
+                  EventPageInfo(event: event),
+                  EventPageMap(event: event),
+                  EventPageContact(event: event),
+                  EventPageToAlbumAndVK(event: event),
+                  EventPageCommentForm(
+                    pagewiseLoadController: _pagewiseLoadController,
+                    commentFadeAnimationController: _animationController,
+                    event: event,
+                    userInfo: userInfo,
+                  )
+                ])),
             EventPageComments(
                 bloc: _eventDetailsBloc,
                 event: event,
@@ -204,6 +213,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
     return Theme(
       data: ThemeData(),
       child: Scaffold(
+          key: scaffoldKey,
           body: StreamBuilder(
               stream: _userBloc.userInfo,
               builder: (context, userSnapshot) {
@@ -211,7 +221,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                     stream: _eventDetailsBloc.event,
                     builder: (context, eventSnapshot) {
                       if (userSnapshot.connectionState ==
-                              ConnectionState.active &&
+                          ConnectionState.active &&
                           eventSnapshot.connectionState ==
                               ConnectionState.active) {
                         UserInfo userInfo = userSnapshot.data;
@@ -244,9 +254,9 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
     final firstImage = event.mainPhoto;
 
     Share.plainText(
-            text: "${firstImage ?? ""}\n"
-                "${event.name}\n"
-                "${event.description ?? ""}")
+        text: "${firstImage ?? ""}\n"
+            "${event.name}\n"
+            "${event.description ?? ""}")
         .share();
   }
 
@@ -297,23 +307,23 @@ class EventPageInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         child: Container(
-      child: Column(
-        children: <Widget>[
-          Container(
-              margin: const EdgeInsets.only(top: 25), child: buildTitle()),
-          ListTile(
-              title: Text(event.eventTimeBounds(),
-                  style: const TextStyle(fontStyle: FontStyle.italic)),
-              trailing: const Icon(
-                Icons.event_available,
-                size: 30,
-              ),
-              onTap: () => addToCalendar(event)),
-          _buildDescription(event)
-        ],
-      ),
-      padding: const EdgeInsets.only(bottom: 20),
-    ));
+          child: Column(
+            children: <Widget>[
+              Container(
+                  margin: const EdgeInsets.only(top: 25), child: buildTitle()),
+              ListTile(
+                  title: Text(event.eventTimeBounds(),
+                      style: const TextStyle(fontStyle: FontStyle.italic)),
+                  trailing: const Icon(
+                    Icons.event_available,
+                    size: 30,
+                  ),
+                  onTap: () => addToCalendar(event)),
+              _buildDescription(event)
+            ],
+          ),
+          padding: const EdgeInsets.only(bottom: 20),
+        ));
   }
 }
 
@@ -334,6 +344,7 @@ class EventPageMap extends StatelessWidget {
         initialCameraPosition: CameraPosition(
             target: LatLng(event.latitude, event.longitude), zoom: 15),
         scrollGesturesEnabled: false,
+        myLocationButtonEnabled: false,
         tiltGesturesEnabled: false,
         rotateGesturesEnabled: false,
         zoomGesturesEnabled: false,
@@ -354,12 +365,12 @@ class EventPageContact extends StatelessWidget {
 
     return phones
         .map((phone) => ListTile(
-              leading: Icon(Icons.phone, color: primaryColor),
-              title: Text(phone),
-              onTap: () {
-                _openPhone(phone);
-              },
-            ))
+      leading: Icon(Icons.phone, color: primaryColor),
+      title: Text(phone),
+      onTap: () {
+        _openPhone(phone);
+      },
+    ))
         .toList();
   }
 
@@ -379,24 +390,24 @@ class EventPageContact extends StatelessWidget {
           ),
           event.address != null && event.address.isNotEmpty
               ? ListTile(
-                  leading: Icon(
-                    Icons.place,
-                    color: primaryColor,
-                  ),
-                  title: Text(event.address),
-                  onTap: () {
-                    launch("geo:${event.latitude},${event.longitude}");
-                  },
-                )
+            leading: Icon(
+              Icons.place,
+              color: primaryColor,
+            ),
+            title: Text(event.address),
+            onTap: () {
+              launch("geo:${event.latitude},${event.longitude}");
+            },
+          )
               : Container(),
           event.place != null && event.place.isNotEmpty
               ? ListTile(
-                  leading: Icon(Icons.explore, color: primaryColor),
-                  title: Text(event.place),
-                  onTap: () {
-                    launch("geo:${event.latitude},${event.longitude}");
-                  },
-                )
+            leading: Icon(Icons.explore, color: primaryColor),
+            title: Text(event.place),
+            onTap: () {
+              launch("geo:${event.latitude},${event.longitude}");
+            },
+          )
               : Container(),
         ]..addAll(_buildPhones(primaryColor)),
       ),
@@ -419,30 +430,30 @@ class EventPageToAlbumAndVK extends StatelessWidget {
 
     return Card(
         child: Column(
-      children: <Widget>[
-        event.hasAlbums
-            ? ListTile(
-                leading: Icon(Icons.photo_album, color: color, size: 30),
-                title: const Text("Фотоальбомы события"),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                    return GalleryPage(eventId: event.id);
-                  }));
-                },
-              )
-            : Container(),
-        event.externalRef != null && event.externalRef.isNotEmpty
-            ? ListTile(
-                leading: Icon(Icons.language, color: color, size: 30),
-                title: const Text("Подробнее о событии"),
-                onTap: () {
-                  launch(event.externalRef);
-                },
-              )
-            : Container(),
-      ],
-    ));
+          children: <Widget>[
+            event.hasAlbums
+                ? ListTile(
+              leading: Icon(Icons.photo_album, color: color, size: 30),
+              title: const Text("Фотоальбомы события"),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (BuildContext context) {
+                      return GalleryPage(eventId: event.id);
+                    }));
+              },
+            )
+                : Container(),
+            event.externalRef != null && event.externalRef.isNotEmpty
+                ? ListTile(
+              leading: Icon(Icons.language, color: color, size: 30),
+              title: const Text("Подробнее о событии"),
+              onTap: () {
+                launch(event.externalRef);
+              },
+            )
+                : Container(),
+          ],
+        ));
   }
 }
 
@@ -454,10 +465,10 @@ class EventPageCommentForm extends StatefulWidget {
 
   const EventPageCommentForm(
       {Key key,
-      this.pagewiseLoadController,
-      this.commentFadeAnimationController,
-      this.event,
-      this.userInfo})
+        this.pagewiseLoadController,
+        this.commentFadeAnimationController,
+        this.event,
+        this.userInfo})
       : super(key: key);
 
   @override
@@ -552,11 +563,11 @@ class EventPageComments extends StatelessWidget {
 
   const EventPageComments(
       {Key key,
-      this.event,
-      this.pagewiseLoadController,
-      this.commentFadeAnimation,
-      this.userInfo,
-      this.bloc})
+        this.event,
+        this.pagewiseLoadController,
+        this.commentFadeAnimation,
+        this.userInfo,
+        this.bloc})
       : super(key: key);
 
   void onReportComment(BuildContext context, Comment c) async {
@@ -568,11 +579,11 @@ class EventPageComments extends StatelessWidget {
     return PopupMenuButton<String>(
         itemBuilder: (context) => userInfo.vkId != null
             ? <PopupMenuEntry<String>>[
-                PopupMenuItem<String>(
-                  child: Text("Пожаловаться"),
-                  value: "report",
-                )
-              ]
+          PopupMenuItem<String>(
+            child: Text("Пожаловаться"),
+            value: "report",
+          )
+        ]
             : [],
         onSelected: (value) {
           if (value == "report") {
@@ -609,7 +620,7 @@ class EventPageComments extends StatelessWidget {
                         DateFormat("d MMMM y H:mm", "ru_RU")
                             .format(c.modifiedAt),
                         style:
-                            const TextStyle(fontSize: 13, color: Colors.grey),
+                        const TextStyle(fontSize: 13, color: Colors.grey),
                       ))
                 ],
               ),
