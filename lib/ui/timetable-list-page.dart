@@ -7,6 +7,8 @@ import 'package:omsk_events/bloc/bloc-widget.dart';
 import 'package:omsk_events/model/event-short.dart';
 import 'package:omsk_events/ui/timetable-item.dart';
 
+import '../resources/providers/user-info-provider.dart';
+
 class TimetableListPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => TimetableListPageState();
@@ -18,6 +20,15 @@ class TimetableListPageState extends State<TimetableListPage> {
 
   bool _filterPast = true;
 
+  void _onUserInfoChanged(UserInfo res) {
+    print(res);
+    if (res == null) Navigator.pushNamed(context, "/auth");
+    else  {
+      print("fetching");
+      _timetableBloc.loadTimetable();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -25,9 +36,13 @@ class TimetableListPageState extends State<TimetableListPage> {
     _timetableBloc = BlocWidget.of(context);
     _userBloc = BlocWidget.of(context);
 
-    _userBloc.userInfo.first.then((res) {
-      if (res == null) Navigator.pushNamed(context, "/auth");
-    });
+    _userBloc.userInfo.listen(_onUserInfoChanged);
+  }
+
+  @override
+  void didUpdateWidget(TimetableListPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _timetableBloc.loadTimetable();
   }
 
   @override

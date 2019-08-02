@@ -75,7 +75,7 @@ class _VkAuthPageState extends State<VkAuthPage> {
                 _error == null ? CircularProgressIndicator() : Text(_error)));
   }
 
-  void vkAuth() {
+  void vkAuth() async {
     if (Platform.isAndroid) {
       vkSignIn.logIn(['offline']).then((VkLoginResult result) {
         switch (result.status) {
@@ -101,22 +101,41 @@ class _VkAuthPageState extends State<VkAuthPage> {
       });
     } else if (Platform.isIOS) {
       final vkSdk = DI.vkSdkProvider.getInstance();
-
       final List<String> scopes = [VKPermission.OFFLINE];
+
+      vkSdk.accessAuthorizationFinished.listen((result) async {
+        if (result.state == VKAuthorizationState.Error) {
+          setState(() {
+            _error = "Что-то пошло не так :(";
+          });
+        }
+      });
 
       vkSdk.authorizationStateUpdated.listen((result) async {
         if (result.state == VKAuthorizationState.Authorized) {
           await _bloc.authenticate(
               result.token.accessToken, int.parse(result.token.userId));
           Navigator.pop(context);
-        } else {
-          setState(() {
-            _error = "Что-то пошло не так: ${result.error}";
-          });
         }
       });
 
-      vkSdk.authorize(scopes, isSafariDisabled: true);
+      final isLoggedIn = await vkSdk.isLoggedIn();
+
+      if(isLoggedIn) {
+        final accessToken = await vkSdk.accessToken();
+        await _bloc.authenticate(
+            accessToken.accessToken, int.parse(accessToken.userId));
+        print("pop");
+        Navigator.pop(context);
+      } else {
+        try {
+          vkSdk.authorize(scopes, isSafariDisabled: true);
+        } on VKSdkException catch (error) {
+          setState(() {
+            _error = "Что-то пошло не так :(";
+          });
+        }
+      }
     }
   }
 }

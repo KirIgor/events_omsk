@@ -18,19 +18,21 @@ class UserBloc extends BlocBase {
 
     UserInfo info = UserInfo(vkId, token);
 
-    _userInfoProvider.setUserInfo(info);
+    await _userInfoProvider.setUserInfo(info);
 
-    _userInfoSubject.sink.add(info);
+    print("add user info");
+    _userInfoSubject.add(info);
   }
 
   Future<void> logOut() async {
-    _userInfoProvider.setUserInfo(null);
+    await _userInfoProvider.setUserInfo(null);
 
-    _userInfoSubject.sink.add(null);
+    _userInfoSubject.add(null);
   }
 
   @override
   void dispose() {
+    print("dispose user bloc");
     _userInfoSubject.close();
   }
 
@@ -38,6 +40,6 @@ class UserBloc extends BlocBase {
   void init() async {
     final info = await _userInfoProvider.getUserInfo();
 
-    _userInfoSubject.sink.add(info);
+    _userInfoSubject.add(info);
   }
 }
