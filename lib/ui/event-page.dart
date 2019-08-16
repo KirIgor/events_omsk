@@ -27,7 +27,7 @@ enum ActionsTypes { addToCalendar }
 
 final scaffoldKey = GlobalKey<ScaffoldState>();
 
-void addToCalendar(EventFull event) {
+void addToCalendar(EventFull event) async {
   final Event addedEvent = Event(
     title: event.name,
     description: event.description,
@@ -37,9 +37,9 @@ void addToCalendar(EventFull event) {
         (event.endDateTime ?? event.startDateTime).add(Duration(hours: -6)),
   );
 
-  Add2Calendar.addEvent2Cal(addedEvent);
+  final added = await Add2Calendar.addEvent2Cal(addedEvent);
 
-  if (Platform.isIOS) {
+  if (Platform.isIOS && added) {
     scaffoldKey.currentState.showSnackBar(
         SnackBar(content: Text("Событие успешно добавлено в календарь")));
   }

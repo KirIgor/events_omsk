@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_html/flutter_html.dart';
+
+import 'dart:io';
 
 class AboutPage extends StatelessWidget {
   @override
@@ -112,21 +113,24 @@ class AboutPage extends StatelessWidget {
   }
 
   void _share() {
-    const appUrl =
-        "https://play.google.com/store/apps/details?id=ru.admomsk.omsk_events&hl=ru";
+    if(Platform.isAndroid) {
+      const appUrl =
+          "https://play.google.com/store/apps/details?id=ru.admomsk.omsk_events&hl=ru";
 
-    //TODO(Change app url)
-    Share.plainText(
-            title: "Карта праздничных мероприятий Омска",
-            text:
-                "Скачайте приложение с $appUrl и будьте в курсе всех праздничных мероприятий в городе")
-        .share();
+      Share.plainText(
+          title: "Карта праздничных мероприятий Омска",
+          text:
+          "Скачайте приложение с $appUrl и будьте в курсе всех праздничных мероприятий в городе")
+          .share();
+    }
   }
 
   void _rateApp() {
-    const url =
-        "https://play.google.com/store/apps/details?id=ru.admomsk.omsk_events&hl=ru";
-    launch(url);
+    if(Platform.isAndroid) {
+      const url =
+          "https://play.google.com/store/apps/details?id=ru.admomsk.omsk_events&hl=ru";
+      launch(url);
+    }
   }
 
   void _firstLink() {

@@ -48,11 +48,6 @@ class TimetableBloc extends BlocBase {
   }
 
   @override
-  void init() {
-    loadTimetable();
-  }
-
-  @override
   void dispose() {
     super.dispose();
     _timetableFetcher.close();
