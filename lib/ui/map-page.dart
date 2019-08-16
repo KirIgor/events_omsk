@@ -8,6 +8,7 @@ import 'package:omsk_events/model/setting.dart';
 import 'package:omsk_events/model/event-short.dart';
 
 import 'dart:async';
+import 'dart:io';
 
 import '../di.dart';
 
@@ -108,6 +109,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
             _updateMarkers(_zoom, _settings, _events);
           },
           rotateGesturesEnabled: false,
+          myLocationButtonEnabled: false,
           initialCameraPosition:
               CameraPosition(target: omskCameraPosition, zoom: initZoom)),
       Opacity(
@@ -195,7 +197,8 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         return BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueOrange);
       case EventType.SPECIAL_DATE_2:
-        return BitmapDescriptor.defaultMarkerWithHue(21); //dark orange
+        return BitmapDescriptor.defaultMarkerWithHue(
+            Platform.isIOS ? 8 : 21); //dark orange
       case EventType.SPECIAL_DATE_3:
         return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
       case EventType.FUTURE:
@@ -275,12 +278,17 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                   "Длящиеся несколько дней и выпадающие на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
             ),
             ListTile(
-              leading: Icon(Icons.location_on, color: Colors.orange),
+              leading: Icon(Icons.location_on,
+                  color: Platform.isIOS
+                      ? Color.fromARGB(255, 177, 97, 12)
+                      : Colors.orange),
               title: Text(specialDateFormat.format(specialDate1)),
             ),
             ListTile(
               leading: Icon(Icons.location_on,
-                  color: Color.fromARGB(255, 255, 117, 24)),
+                  color: Platform.isIOS
+                      ? Color.fromARGB(255, 223, 58, 10)
+                      : Color.fromARGB(255, 255, 117, 24)),
               title: Text(specialDateFormat.format(specialDate2)),
             ),
             ListTile(
@@ -297,7 +305,10 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
               title: Text("Прошедшие"),
             ),
             ListTile(
-              leading: Icon(Icons.location_on, color: Colors.yellow),
+              leading: Icon(Icons.location_on,
+                  color: Platform.isIOS
+                      ? Color.fromARGB(255, 138, 131, 24)
+                      : Colors.yellow),
               title: Text("В другие дни"),
             ),
           ],

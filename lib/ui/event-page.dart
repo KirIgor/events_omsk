@@ -19,21 +19,30 @@ import 'package:omsk_events/model/event.dart';
 import 'package:omsk_events/model/comment.dart';
 
 import 'dart:math';
+import 'dart:io';
 
 import 'gallery-page.dart';
 
 enum ActionsTypes { addToCalendar }
+
+final scaffoldKey = GlobalKey<ScaffoldState>();
 
 void addToCalendar(EventFull event) {
   final Event addedEvent = Event(
     title: event.name,
     description: event.description,
     location: event.address ?? event.place,
-    startDate: event.startDateTime,
-    endDate: event.endDateTime ?? event.startDateTime,
+    startDate: event.startDateTime.add(Duration(hours: -6)),
+    endDate:
+        (event.endDateTime ?? event.startDateTime).add(Duration(hours: -6)),
   );
 
   Add2Calendar.addEvent2Cal(addedEvent);
+
+  if (Platform.isIOS) {
+    scaffoldKey.currentState.showSnackBar(
+        SnackBar(content: Text("Событие успешно добавлено в календарь")));
+  }
 }
 
 class EventPage extends StatefulWidget {
@@ -204,6 +213,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
     return Theme(
       data: ThemeData(),
       child: Scaffold(
+          key: scaffoldKey,
           body: StreamBuilder(
               stream: _userBloc.userInfo,
               builder: (context, userSnapshot) {
@@ -334,6 +344,7 @@ class EventPageMap extends StatelessWidget {
         initialCameraPosition: CameraPosition(
             target: LatLng(event.latitude, event.longitude), zoom: 15),
         scrollGesturesEnabled: false,
+        myLocationButtonEnabled: false,
         tiltGesturesEnabled: false,
         rotateGesturesEnabled: false,
         zoomGesturesEnabled: false,
