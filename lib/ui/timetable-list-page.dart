@@ -22,8 +22,9 @@ class TimetableListPageState extends State<TimetableListPage> {
 
   void _onUserInfoChanged(UserInfo res) {
     print(res);
-    if (res == null) Navigator.pushNamed(context, "/auth");
-    else  {
+    if (res == null)
+      Navigator.pushNamed(context, "/auth");
+    else {
       print("fetching");
       _timetableBloc.loadTimetable();
     }
@@ -51,26 +52,6 @@ class TimetableListPageState extends State<TimetableListPage> {
       appBar: AppBar(
         title: Text("Избранное"),
         backgroundColor: Colors.white,
-        actions: <Widget>[
-          PopupMenuButton(
-              tooltip: "Фильтрация",
-              icon: Icon(Icons.filter_list),
-              itemBuilder: (context) => [
-                    PopupMenuItem(
-                        child: Text(_filterPast
-                            ? "Добавить прошедшие"
-                            : "Убрать прошедшие"),
-                        value: "filterPast")
-                  ],
-              onSelected: (value) {
-                if (value == "filterPast") {
-                  _timetableBloc.changeFilterPast(!_filterPast);
-                  setState(() {
-                    _filterPast = !_filterPast;
-                  });
-                }
-              }),
-        ],
       ),
       body: RefreshIndicator(
           child: StreamBuilder(

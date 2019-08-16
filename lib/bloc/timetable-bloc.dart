@@ -22,7 +22,7 @@ class TimetableBloc extends BlocBase {
       : _timetableRepository = timetableRepository,
         _eventRepository = eventRepository;
 
-  bool _filterPast = true;
+  bool _filterPast = false;
 
   Future<void> loadTimetable() {
     return _timetableRepository.fetchTimetable().then((timetable) {

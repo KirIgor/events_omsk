@@ -186,7 +186,20 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     return res;
   }
 
-  _getIcon(EventType eventType) {
+  double _getSpecialDateHue(String specialDateColorId) {
+    switch (specialDateColorId) {
+      case "1":
+        return BitmapDescriptor.hueOrange;
+      case "2":
+        return Platform.isIOS ? 8 : 21;
+      case "3":
+        return BitmapDescriptor.hueRed;
+      default:
+        throw Exception("Неправильный цвет");
+    }
+  }
+
+  _getIcon(EventType eventType, List<Setting> settings) {
     switch (eventType) {
       case EventType.CURRENT:
         return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
@@ -194,13 +207,17 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         return BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueMagenta);
       case EventType.SPECIAL_DATE_1:
-        return BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueOrange);
+        return BitmapDescriptor.defaultMarkerWithHue(_getSpecialDateHue(settings
+            .firstWhere((setting) => setting.key == "SPECIAL_DATE_1_COLOR")
+            .value));
       case EventType.SPECIAL_DATE_2:
-        return BitmapDescriptor.defaultMarkerWithHue(
-            Platform.isIOS ? 8 : 21); //dark orange
+        return BitmapDescriptor.defaultMarkerWithHue(_getSpecialDateHue(settings
+            .firstWhere((setting) => setting.key == "SPECIAL_DATE_1_COLOR")
+            .value)); //dark orange
       case EventType.SPECIAL_DATE_3:
-        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+        return BitmapDescriptor.defaultMarkerWithHue(_getSpecialDateHue(settings
+            .firstWhere((setting) => setting.key == "SPECIAL_DATE_1_COLOR")
+            .value));
       case EventType.FUTURE:
         return BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueYellow);
@@ -247,7 +264,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
             _controller.forward();
           },
           position: LatLng(e.latitude, e.longitude),
-          icon: _getIcon(eventType));
+          icon: _getIcon(eventType, settings));
     }).toSet();
   }
 
@@ -262,6 +279,16 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_3")
         .value));
 
+    final specialDate1Color =
+        settings.firstWhere((setting) => setting.key == "SPECIAL_DATE_1_COLOR");
+    final specialDate2Color =
+        settings.firstWhere((setting) => setting.key == "SPECIAL_DATE_2_COLOR");
+    final specialDate3Color =
+        settings.firstWhere((setting) => setting.key == "SPECIAL_DATE_3_COLOR");
+
+    final title =
+        settings.firstWhere((setting) => setting.key == "TITLE").value;
+
     final justDayFormat = DateFormat("d");
     final specialDateFormat = DateFormat("d MMMM", "ru_RU");
 
@@ -272,44 +299,63 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
           title: Text("Цветовое кодирование"),
           children: <Widget>[
             ListTile(
-              leading: Icon(Icons.location_on,
-                  color: Color.fromARGB(255, 255, 0, 255)),
-              title: Text(
-                  "Длящиеся несколько дней и выпадающие на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
+              leading: Icon(Icons.location_on, color: Colors.green),
+              title: Text("Сегодня"),
+            ),
+            Container(
+              height: 1,
+              color: Colors.black26,
+              margin: EdgeInsets.only(left: 10, right: 10),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 10),
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
             ),
             ListTile(
               leading: Icon(Icons.location_on,
                   color: Platform.isIOS
                       ? Color.fromARGB(255, 177, 97, 12)
-                      : Colors.orange),
+                      : specialDate1Color.getSpecialDateColor()),
               title: Text(specialDateFormat.format(specialDate1)),
             ),
             ListTile(
               leading: Icon(Icons.location_on,
                   color: Platform.isIOS
                       ? Color.fromARGB(255, 223, 58, 10)
-                      : Color.fromARGB(255, 255, 117, 24)),
+                      : specialDate2Color.getSpecialDateColor()),
               title: Text(specialDateFormat.format(specialDate2)),
             ),
             ListTile(
-              leading: Icon(Icons.location_on, color: Colors.red),
+              leading: Icon(Icons.location_on,
+                  color: specialDate3Color.getSpecialDateColor()),
               title: Text(specialDateFormat.format(specialDate3)),
             ),
             ListTile(
-              leading: Icon(Icons.location_on, color: Colors.green),
-              title: Text("Сегодня"),
-            ),
-            ListTile(
               leading: Icon(Icons.location_on,
-                  color: Color.fromARGB(255, 0, 127, 255)),
-              title: Text("Прошедшие"),
+                  color: Color.fromARGB(255, 255, 0, 255)),
+              title: Text(
+                  "Длящиеся несколько дней и выпадающие на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
             ),
+            Container(
+                height: 1,
+                color: Colors.black26,
+                margin:
+                    EdgeInsets.only(top: 10, bottom: 5, left: 10, right: 10)),
             ListTile(
               leading: Icon(Icons.location_on,
                   color: Platform.isIOS
                       ? Color.fromARGB(255, 138, 131, 24)
                       : Colors.yellow),
               title: Text("В другие дни"),
+            ),
+            ListTile(
+              leading: Icon(Icons.location_on,
+                  color: Color.fromARGB(255, 0, 127, 255)),
+              title: Text("Прошедшие"),
             ),
           ],
         );

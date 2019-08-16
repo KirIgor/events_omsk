@@ -120,7 +120,11 @@ class EventItem extends StatelessWidget {
                                       color: Colors.black45, size: 16.0),
                                   Container(
                                       margin: EdgeInsets.only(left: 4),
-                                      child: Text(_event.eventTimeBounds(),
+                                      child: Text(
+                                          _event.isOnGoing()
+                                              ? _event
+                                                  .eventTimeBoundsForOnGoing()
+                                              : _event.eventTimeBounds(),
                                           style:
                                               TextStyle(color: Colors.black45)))
                                 ])),

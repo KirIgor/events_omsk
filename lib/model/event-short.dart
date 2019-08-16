@@ -77,6 +77,9 @@ class EventShort {
     }
   }
 
+  String eventTimeBoundsForOnGoing() =>
+      "До ${DateFormat("d MMMM, ", "ru_RU").format(endDateTime)}${DateFormat("H:mm", "ru_RU").format(startDateTime)}–${DateFormat("H:mm", "ru_RU").format(endDateTime)}";
+
   DateTime _dateWithoutTime(DateTime dateTime) => dateTime == null
       ? null
       : DI.dateConverter

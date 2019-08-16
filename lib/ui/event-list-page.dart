@@ -73,6 +73,16 @@ class _EventListState extends State<EventListPage> {
         .firstWhere((setting) => setting.key == "SPECIAL_DATE_3")
         .value));
 
+    final specialDate1Color =
+        settings.firstWhere((setting) => setting.key == "SPECIAL_DATE_1_COLOR");
+    final specialDate2Color =
+        settings.firstWhere((setting) => setting.key == "SPECIAL_DATE_2_COLOR");
+    final specialDate3Color =
+        settings.firstWhere((setting) => setting.key == "SPECIAL_DATE_3_COLOR");
+
+    final title =
+        settings.firstWhere((setting) => setting.key == "TITLE").value;
+
     final justDayFormat = DateFormat("d");
     final specialDateFormat = DateFormat("d MMMM", "ru_RU");
 
@@ -82,34 +92,58 @@ class _EventListState extends State<EventListPage> {
         const radius = 8.0;
 
         return SimpleDialog(
-          title: Text("Цветовое кодирование"),
+          title: Text(
+            "Цветовое кодирование",
+            textAlign: TextAlign.center,
+          ),
           children: <Widget>[
+            ListTile(
+              leading:
+                  CircleAvatar(backgroundColor: Colors.green, radius: radius),
+              title: Text("Сегодня"),
+            ),
+            Container(
+              height: 1,
+              color: Colors.black26,
+              margin: EdgeInsets.only(left: 10, right: 10),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 10),
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+            ),
+            ListTile(
+              leading: CircleAvatar(
+                  backgroundColor: specialDate1Color.getSpecialDateColor(),
+                  radius: radius),
+              title: Text(specialDateFormat.format(specialDate1)),
+            ),
+            ListTile(
+              leading: CircleAvatar(
+                  backgroundColor: specialDate2Color.getSpecialDateColor(),
+                  radius: radius),
+              title: Text(specialDateFormat.format(specialDate2)),
+            ),
+            ListTile(
+              leading: CircleAvatar(
+                  backgroundColor: specialDate3Color.getSpecialDateColor(),
+                  radius: radius),
+              title: Text(specialDateFormat.format(specialDate3)),
+            ),
             ListTile(
               leading:
                   CircleAvatar(backgroundColor: Colors.purple, radius: radius),
               title: Text(
                   "Длящиеся несколько дней и выпадающие на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
             ),
-            ListTile(
-              leading:
-                  CircleAvatar(backgroundColor: Colors.orange, radius: radius),
-              title: Text(specialDateFormat.format(specialDate1)),
-            ),
-            ListTile(
-              leading: CircleAvatar(
-                  backgroundColor: Colors.deepOrangeAccent, radius: radius),
-              title: Text(specialDateFormat.format(specialDate2)),
-            ),
-            ListTile(
-              leading:
-                  CircleAvatar(backgroundColor: Colors.red, radius: radius),
-              title: Text(specialDateFormat.format(specialDate3)),
-            ),
-            ListTile(
-              leading:
-                  CircleAvatar(backgroundColor: Colors.green, radius: radius),
-              title: Text("Сегодня"),
-            ),
+            Container(
+                height: 1,
+                color: Colors.black26,
+                margin:
+                    EdgeInsets.only(top: 10, bottom: 5, left: 10, right: 10)),
             ListTile(
               leading:
                   CircleAvatar(backgroundColor: Colors.yellow, radius: radius),
