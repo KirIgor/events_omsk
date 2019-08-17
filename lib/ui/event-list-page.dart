@@ -12,6 +12,33 @@ import 'package:omsk_events/utils/utils.dart';
 import '../di.dart';
 import 'event-item.dart';
 
+class _ListTile extends StatelessWidget {
+  final Widget leading;
+  final Widget title;
+
+  const _ListTile({Key key, this.leading, this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTextStyle(
+        style: TextStyle(fontSize: 16, color: Colors.black),
+        child: Container(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  child: leading,
+                  margin: EdgeInsets.only(left: 25),
+                ),
+                Container(
+                  child: title,
+                  margin: EdgeInsets.only(left: 20),
+                )
+              ],
+            )));
+  }
+}
+
 class EventListPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -83,8 +110,7 @@ class _EventListState extends State<EventListPage> {
     final title =
         settings.firstWhere((setting) => setting.key == "TITLE").value;
 
-    final justDayFormat = DateFormat("d");
-    final specialDateFormat = DateFormat("d MMMM", "ru_RU");
+    final specialDateFormat = DateFormat("d MMMM, E", "ru_RU");
 
     showDialog(
       context: context,
@@ -94,10 +120,9 @@ class _EventListState extends State<EventListPage> {
         return SimpleDialog(
           title: Text(
             "Цветовое кодирование",
-            textAlign: TextAlign.center,
           ),
           children: <Widget>[
-            ListTile(
+            _ListTile(
               leading:
                   CircleAvatar(backgroundColor: Colors.green, radius: radius),
               title: Text("Сегодня"),
@@ -108,43 +133,41 @@ class _EventListState extends State<EventListPage> {
               margin: EdgeInsets.only(left: 10, right: 10),
             ),
             Container(
-              margin: EdgeInsets.only(top: 10),
+              margin: EdgeInsets.only(top: 10, left: 25, bottom: 10),
               child: Text(
                 title,
-                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             ),
-            ListTile(
+            _ListTile(
               leading: CircleAvatar(
                   backgroundColor: specialDate1Color.getSpecialDateColor(),
                   radius: radius),
               title: Text(specialDateFormat.format(specialDate1)),
             ),
-            ListTile(
+            _ListTile(
               leading: CircleAvatar(
                   backgroundColor: specialDate2Color.getSpecialDateColor(),
                   radius: radius),
               title: Text(specialDateFormat.format(specialDate2)),
             ),
-            ListTile(
+            _ListTile(
               leading: CircleAvatar(
                   backgroundColor: specialDate3Color.getSpecialDateColor(),
                   radius: radius),
               title: Text(specialDateFormat.format(specialDate3)),
             ),
-            ListTile(
+            _ListTile(
               leading:
                   CircleAvatar(backgroundColor: Colors.purple, radius: radius),
-              title: Text(
-                  "Длящиеся несколько дней и выпадающие на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
+              title: Text("Многодневные"),
             ),
             Container(
                 height: 1,
                 color: Colors.black26,
                 margin:
                     EdgeInsets.only(top: 10, bottom: 5, left: 10, right: 10)),
-            ListTile(
+            _ListTile(
               leading:
                   CircleAvatar(backgroundColor: Colors.yellow, radius: radius),
               title: Text("В другие дни"),

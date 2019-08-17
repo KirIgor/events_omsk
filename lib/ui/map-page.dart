@@ -12,6 +12,33 @@ import 'dart:io';
 
 import '../di.dart';
 
+class _ListTile extends StatelessWidget {
+  final Widget leading;
+  final Widget title;
+
+  const _ListTile({Key key, this.leading, this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTextStyle(
+        style: TextStyle(fontSize: 16, color: Colors.black),
+        child: Container(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  child: leading,
+                  margin: EdgeInsets.only(left: 25),
+                ),
+                Container(
+                  child: title,
+                  margin: EdgeInsets.only(left: 20),
+                )
+              ],
+            )));
+  }
+}
+
 const initZoom = 11.5;
 const dZoomToChangeMarkers = 1.0;
 const gridCountXInView = 5;
@@ -179,13 +206,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                 )));
   }
 
-  double _getZIndex(EventShort e, EventType type) {
-    double res =
-        (EventType.values.length - EventType.values.indexOf(type)).toDouble();
-    if (e.isBig && type != EventType.PAST) res += EventType.values.length;
-    return res;
-  }
-
   double _getSpecialDateHue(String specialDateColorId) {
     switch (specialDateColorId) {
       case "1":
@@ -289,16 +309,17 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     final title =
         settings.firstWhere((setting) => setting.key == "TITLE").value;
 
-    final justDayFormat = DateFormat("d");
-    final specialDateFormat = DateFormat("d MMMM", "ru_RU");
+    final specialDateFormat = DateFormat("d MMMM, E", "ru_RU");
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: Text("Цветовое кодирование"),
+          title: Text(
+            "Цветовое кодирование",
+          ),
           children: <Widget>[
-            ListTile(
+            _ListTile(
               leading: Icon(Icons.location_on, color: Colors.green),
               title: Text("Сегодня"),
             ),
@@ -308,51 +329,48 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
               margin: EdgeInsets.only(left: 10, right: 10),
             ),
             Container(
-              margin: EdgeInsets.only(top: 10),
+              margin: EdgeInsets.only(top: 10, left: 25, bottom: 10),
               child: Text(
                 title,
-                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             ),
-            ListTile(
+            _ListTile(
               leading: Icon(Icons.location_on,
                   color: Platform.isIOS
                       ? Color.fromARGB(255, 177, 97, 12)
                       : specialDate1Color.getSpecialDateColor()),
               title: Text(specialDateFormat.format(specialDate1)),
             ),
-            ListTile(
+            _ListTile(
               leading: Icon(Icons.location_on,
                   color: Platform.isIOS
                       ? Color.fromARGB(255, 223, 58, 10)
                       : specialDate2Color.getSpecialDateColor()),
               title: Text(specialDateFormat.format(specialDate2)),
             ),
-            ListTile(
+            _ListTile(
               leading: Icon(Icons.location_on,
                   color: specialDate3Color.getSpecialDateColor()),
               title: Text(specialDateFormat.format(specialDate3)),
             ),
-            ListTile(
-              leading: Icon(Icons.location_on,
-                  color: Color.fromARGB(255, 255, 0, 255)),
-              title: Text(
-                  "Длящиеся несколько дней и выпадающие на ${justDayFormat.format(specialDate1)}, ${justDayFormat.format(specialDate2)} и/или ${specialDateFormat.format(specialDate3)}"),
-            ),
+            _ListTile(
+                leading: Icon(Icons.location_on,
+                    color: Color.fromARGB(255, 255, 0, 255)),
+                title: Text("Многодневные")),
             Container(
                 height: 1,
                 color: Colors.black26,
                 margin:
                     EdgeInsets.only(top: 10, bottom: 5, left: 10, right: 10)),
-            ListTile(
+            _ListTile(
               leading: Icon(Icons.location_on,
                   color: Platform.isIOS
                       ? Color.fromARGB(255, 138, 131, 24)
                       : Colors.yellow),
               title: Text("В другие дни"),
             ),
-            ListTile(
+            _ListTile(
               leading: Icon(Icons.location_on,
                   color: Color.fromARGB(255, 0, 127, 255)),
               title: Text("Прошедшие"),
