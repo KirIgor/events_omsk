@@ -121,7 +121,8 @@ class EventItem extends StatelessWidget {
                                   Container(
                                       margin: EdgeInsets.only(left: 4),
                                       child: Text(
-                                          _event.isOnGoing()
+                                          _event.isOnGoing() &&
+                                                  _event.isMultiDay()
                                               ? _event
                                                   .eventTimeBoundsForOnGoing()
                                               : _event.eventTimeBounds(),

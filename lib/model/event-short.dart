@@ -169,6 +169,14 @@ class EventShort {
     return startDateTime.isBefore(now) && endDateTime.isAfter(now);
   }
 
+  bool isMultiDay() {
+    if (endDateTime == null) return false;
+
+    return startDateTime.year != endDateTime.year ||
+        startDateTime.month != endDateTime.month ||
+        startDateTime.day != endDateTime.day;
+  }
+
   int get id => _id;
   String get name => _name;
   String get description => _description;
