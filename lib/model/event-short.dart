@@ -93,8 +93,9 @@ class EventShort {
 
     if (startDate == endDate) return false;
 
+    final specialDateRegex = RegExp("^SPECIAL_DATE_[0-9]+\$");
     final specialDates = settings
-        .where((setting) => setting.key.startsWith("SPECIAL_DATE"))
+        .where((setting) => specialDateRegex.hasMatch(setting.key))
         .toList();
 
     return specialDates.any((setting) {
