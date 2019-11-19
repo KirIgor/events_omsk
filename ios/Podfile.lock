@@ -106,7 +106,7 @@ DEPENDENCIES:
   - add_2_calendar (from `.symlinks/plugins/add_2_calendar/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
-  - Flutter (from `.symlinks/flutter/ios`)
+  - Flutter (from `.symlinks/flutter/ios-release`)
   - flutter_vk_login (from `.symlinks/plugins/flutter_vk_login/ios`)
   - flutter_vk_sdk (from `.symlinks/plugins/flutter_vk_sdk/ios`)
   - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
@@ -117,7 +117,7 @@ DEPENDENCIES:
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Firebase
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
@@ -140,7 +140,7 @@ EXTERNAL SOURCES:
   firebase_messaging:
     :path: ".symlinks/plugins/firebase_messaging/ios"
   Flutter:
-    :path: ".symlinks/flutter/ios"
+    :path: ".symlinks/flutter/ios-release"
   flutter_vk_login:
     :path: ".symlinks/plugins/flutter_vk_login/ios"
   flutter_vk_sdk:
@@ -168,7 +168,7 @@ SPEC CHECKSUMS:
   FirebaseCore: aecf02fb2274ec361b9bebeac112f5daa18273bd
   FirebaseInstanceID: 662b8108a09fe9ed01aafdedba100fde8536b0f6
   FirebaseMessaging: 6bb0bdaf64c55fef7a219b7bb1e94e94a0855ced
-  Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_vk_login: 004bf52719d196d5be9562372a9732d9a2249245
   flutter_vk_sdk: 9bc16407e98371e63e15cb5ab5f92a1c4610a747
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
@@ -187,4 +187,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: b6a0a141693093b304368d08511b46cf3d1d0ac5
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.8.4

@@ -11,15 +11,24 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Омск:&#x2007;город&#x2007;сегодня</string>
+	<string>Омск: город сегодня</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>vk6989563</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>vk</string>
@@ -51,14 +60,7 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	<key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>vk6989563</string>
-            </array>
-        </dict>
-    </array>
+    <key>UIUserInterfaceStyle</key>
+    <string>Light</string>
 </dict>
 </plist>
